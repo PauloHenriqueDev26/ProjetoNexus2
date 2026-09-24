@@ -1,10 +1,11 @@
+/** Permite alterar o tema, as notificações e exportar o histórico financeiro. */
 import React, { useCallback, useState } from 'react';
 import { View, Text, TouchableOpacity, ScrollView, Switch } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialIcons';
-import BarraNavegacao from '../components/BarraNavegacao';
-import { AnimatedCard, AnimatedScreen } from '../components/AnimatedScreen';
-import { useAppStyles } from '../styles/styles';
+import BarraNavegacao from '../../components/BarraNavegacao';
+import { AnimatedCard, AnimatedScreen } from '../../components/AnimatedScreen';
+import { useAppStyles } from '../../styles/index';
 import { apiAutenticada } from '../../services/financeiro';
 import { exportarCSV } from '../../services/arquivos';
 import { useTheme } from '../../contexts/ThemeContext';

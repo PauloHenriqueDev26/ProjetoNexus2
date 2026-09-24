@@ -1,3 +1,4 @@
+/** Verifica o banco, processa recorrências e inicia o servidor HTTP e a rotina periódica. */
 import { generateRecurrences } from './recurrences';
 import { app } from './app';
 import { config } from './config';

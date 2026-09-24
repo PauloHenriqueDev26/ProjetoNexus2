@@ -1,3 +1,4 @@
+/** Expõe os dados financeiros, metas, notificações e preferências do usuário autenticado. */
 import { financialSummary } from '../finance';
 import { generateRecurrences } from '../recurrences';
 import { confirmTransaction, createTransaction, parseMoney, positiveId } from '../transactions';
@@ -17,6 +18,7 @@ export const dataRoutes = Router();
 dataRoutes.use(authenticate);
 dataRoutes.use(financeOptionsRoutes);
 
+/** Consulta as preferências com valores padrão quando ainda não há registro. */
 dataRoutes.get('/configuracoes', async (req: AuthenticatedRequest, res, next) => {
   try {
     const [[row]] = await database.query<RowDataPacket[]>(
@@ -32,6 +34,7 @@ dataRoutes.get('/configuracoes', async (req: AuthenticatedRequest, res, next) =>
   }
 });
 
+/** Grava apenas as preferências enviadas nesta requisição. */
 dataRoutes.put('/configuracoes', async (req: AuthenticatedRequest, res, next) => {
   try {
     const { notificacoes, tema } = req.body || {};
@@ -41,7 +44,7 @@ dataRoutes.put('/configuracoes', async (req: AuthenticatedRequest, res, next) =>
       return res.status(400).json({ mensagem: 'Preferência de notificações inválida.' });
     if (tema !== undefined && tema !== 'claro' && tema !== 'escuro')
       return res.status(400).json({ mensagem: 'Escolha tema claro ou escuro.' });
-    // Update only supplied preferences so concurrent changes do not overwrite each other.
+    // Atualiza somente as preferências recebidas para não sobrescrever alterações simultâneas.
     const updates = [
       notificacoes !== undefined ? 'notificacoes_ativas = VALUES(notificacoes_ativas)' : '',
       tema !== undefined ? 'tema = VALUES(tema)' : '',
@@ -62,6 +65,7 @@ dataRoutes.put('/configuracoes', async (req: AuthenticatedRequest, res, next) =>
   }
 });
 
+/** Atualiza recorrências e reúne o resumo financeiro com a meta ativa mais recente. */
 dataRoutes.get('/financeiro/resumo', async (req: AuthenticatedRequest, res, next) => {
   try {
     const userId = req.userId!;
@@ -92,6 +96,7 @@ dataRoutes.get('/financeiro/resumo', async (req: AuthenticatedRequest, res, next
   }
 });
 
+/** Lista os lançamentos e anexos pertencentes ao usuário autenticado. */
 dataRoutes.get('/financeiro/transacoes', async (req: AuthenticatedRequest, res, next) => {
   try {
     await generateRecurrences(req.userId!);
@@ -145,6 +150,7 @@ dataRoutes.get('/financeiro/transacoes', async (req: AuthenticatedRequest, res, 
   }
 });
 
+/** Recebe um lançamento e seu anexo opcional e delega a gravação ao serviço financeiro. */
 dataRoutes.post(
   '/financeiro/transacoes',
   upload.single('arquivo'),
@@ -158,6 +164,7 @@ dataRoutes.post(
   },
 );
 
+/** Confirma somente lançamentos permitidos pela regra financeira. */
 dataRoutes.patch(
   '/financeiro/transacoes/:id/confirmar',
   async (req: AuthenticatedRequest, res, next) => {
@@ -170,6 +177,7 @@ dataRoutes.patch(
   },
 );
 
+/** Calcula o progresso das metas a partir de depósitos e retiradas. */
 dataRoutes.get('/metas', async (req: AuthenticatedRequest, res, next) => {
   try {
     const [rows] = await database.query<DataRow[]>(
@@ -193,6 +201,7 @@ dataRoutes.get('/metas', async (req: AuthenticatedRequest, res, next) => {
   }
 });
 
+/** Cria a meta e registra seu valor inicial quando informado. */
 dataRoutes.post('/metas', async (req: AuthenticatedRequest, res, next) => {
   try {
     const name = typeof req.body.nome === 'string' ? req.body.nome.trim() : '';
@@ -233,7 +242,7 @@ dataRoutes.post('/metas', async (req: AuthenticatedRequest, res, next) => {
   }
 });
 
-
+/** Registra a diferença do valor atual como movimento e atualiza a situação da meta. */
 dataRoutes.put('/metas/:id', async (req: AuthenticatedRequest, res, next) => {
   try {
     const id = positiveId(req.params.id);
@@ -285,7 +294,8 @@ dataRoutes.put('/metas/:id', async (req: AuthenticatedRequest, res, next) => {
       );
       await connection.commit();
       res.json({
-        mensagem: current >= target ? 'Meta atualizada e concluída.' : 'Meta atualizada com sucesso.',
+        mensagem:
+          current >= target ? 'Meta atualizada e concluída.' : 'Meta atualizada com sucesso.',
       });
     } catch (error) {
       await connection.rollback();
@@ -298,6 +308,7 @@ dataRoutes.put('/metas/:id', async (req: AuthenticatedRequest, res, next) => {
   }
 });
 
+/** Exclui somente uma meta pertencente ao usuário autenticado. */
 dataRoutes.delete('/metas/:id', async (req: AuthenticatedRequest, res, next) => {
   try {
     const id = positiveId(req.params.id);
@@ -307,8 +318,7 @@ dataRoutes.delete('/metas/:id', async (req: AuthenticatedRequest, res, next) => 
       'DELETE FROM metas WHERE id_meta = ? AND id_usuario = ?',
       [id, req.userId!],
     );
-    if (!result.affectedRows)
-      return res.status(404).json({ mensagem: 'Meta não encontrada.' });
+    if (!result.affectedRows) return res.status(404).json({ mensagem: 'Meta não encontrada.' });
 
     res.json({ mensagem: 'Meta excluída com sucesso.' });
   } catch (error) {
@@ -316,6 +326,7 @@ dataRoutes.delete('/metas/:id', async (req: AuthenticatedRequest, res, next) => 
   }
 });
 
+/** Retorna os cinquenta avisos mais recentes do usuário. */
 dataRoutes.get('/notificacoes', async (req: AuthenticatedRequest, res, next) => {
   try {
     const [rows] = await database.query<DataRow[]>(
@@ -332,6 +343,7 @@ dataRoutes.get('/notificacoes', async (req: AuthenticatedRequest, res, next) => 
   }
 });
 
+/** Marca a leitura sem permitir alterações nas notificações de outro usuário. */
 dataRoutes.patch('/notificacoes/:id/lida', async (req: AuthenticatedRequest, res, next) => {
   try {
     await database.execute(
@@ -344,6 +356,7 @@ dataRoutes.patch('/notificacoes/:id/lida', async (req: AuthenticatedRequest, res
   }
 });
 
+/** Consulta os dados cadastrais e o endereço associado ao usuário. */
 dataRoutes.get('/usuarios/me', async (req: AuthenticatedRequest, res, next) => {
   try {
     const [rows] = await database.query<DataRow[]>(
@@ -361,6 +374,7 @@ dataRoutes.get('/usuarios/me', async (req: AuthenticatedRequest, res, next) => {
   }
 });
 
+/** Valida e atualiza os dados pessoais do usuário autenticado. */
 dataRoutes.put('/usuarios/me', async (req: AuthenticatedRequest, res, next) => {
   try {
     const name = typeof req.body.nome === 'string' ? req.body.nome.trim() : '';

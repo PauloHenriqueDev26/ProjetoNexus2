@@ -1,12 +1,13 @@
+/** Agrupa os resultados do mês ou dos últimos seis meses para consulta e exportação. */
 import MeasuredChart from '../../components/MeasuredChart';
 import React, { useState } from 'react';
 import { Platform, ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { StackedBarChart } from 'react-native-chart-kit';
 import Icon from '@expo/vector-icons/MaterialIcons';
-import BarraNavegacao from '../components/BarraNavegacao';
-import { AnimatedCard, AnimatedScreen } from '../components/AnimatedScreen';
-import { useAppStyles } from '../styles/styles';
+import BarraNavegacao from '../../components/BarraNavegacao';
+import { AnimatedCard, AnimatedScreen } from '../../components/AnimatedScreen';
+import { useAppStyles } from '../../styles/index';
 import { formatBRL, today } from '../../services/financeiro';
 import { useResumoFinanceiro } from '../../hooks/useResumoFinanceiro';
 import { exportarRelatorio } from '../../services/relatorio';

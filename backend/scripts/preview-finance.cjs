@@ -1,4 +1,5 @@
-// Disposable browser-review fixture. Run from backend after building both apps.
+/** Cria uma prévia com dados sintéticos em banco temporário; execute após compilar a API e exportar o aplicativo. */
+// Prévia descartável para revisão no navegador; execute no backend após compilar os dois projetos.
 require('dotenv/config');
 const mysql = require('mysql2/promise');
 const bcrypt = require('bcryptjs');

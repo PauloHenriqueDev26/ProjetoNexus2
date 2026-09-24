@@ -1,3 +1,4 @@
+/** Sincroniza a preferência de tema entre servidor, armazenamento local e interface. */
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Appearance, Platform, View } from 'react-native';
 import {
@@ -49,6 +50,7 @@ export function AppThemeProvider({ children }) {
     let active = true;
     const initialRevision = revision.current;
     const key = `${DEVICE_KEY}_${userId}`;
+    /** Restaura a preferência do usuário sem sobrescrever uma escolha feita durante a consulta. */
     async function restore() {
       try {
         const cached = await read(key).catch(() => null);
@@ -62,7 +64,7 @@ export function AppThemeProvider({ children }) {
           await Promise.all([write(key, data.tema), write(DEVICE_KEY, data.tema)]);
         }
       } catch {
-        /* Keep the cached theme when offline. */
+        /* Mantém o tema armazenado localmente quando não há conexão. */
       }
     }
     setErroTema('');
@@ -81,6 +83,7 @@ export function AppThemeProvider({ children }) {
     SystemUI.setBackgroundColorAsync(colors.background).catch(() => {});
   }, [tema, colors, pronto]);
 
+  /** Aplica a escolha imediatamente e desfaz a mudança se a gravação no servidor falhar. */
   async function alterarTema(next) {
     if (!isTheme(next) || saving.current || next === tema) return;
     const previous = tema;
@@ -98,7 +101,7 @@ export function AppThemeProvider({ children }) {
           body: JSON.stringify({ tema: next }),
         });
       if (identity.current !== owner) return;
-      // The database is authoritative. A cache failure must not undo a saved preference.
+      // O banco é a fonte da preferência; uma falha no armazenamento local não desfaz o tema já salvo.
       try {
         await Promise.all([
           write(DEVICE_KEY, next),
@@ -147,12 +150,14 @@ export function AppThemeProvider({ children }) {
   );
 }
 
+/** Expõe a paleta e as ações de tema fornecidas pelo provedor. */
 export function useTheme() {
   const context = useContext(ThemeContext);
   if (!context) throw new Error('useTheme deve ser usado dentro de AppThemeProvider.');
   return context;
 }
 
+/** Recalcula os estilos locais somente quando a função ou a paleta muda. */
 export function useThemedStyles(createStyles) {
   const { colors } = useTheme();
   return useMemo(() => createStyles(colors), [createStyles, colors]);

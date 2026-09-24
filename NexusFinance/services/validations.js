@@ -1,21 +1,6 @@
+/** Valida e-mail, nascimento e senha antes do envio dos formulários de autenticação. */
 export function validarEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
-}
-
-export function validarCpf(valor) {
-  const cpf = valor.replace(/\D/g, '');
-  if (cpf.length !== 11 || /^(\d)\1{10}$/.test(cpf)) return false;
-
-  const digito = (tamanho) => {
-    let soma = 0;
-    for (let indice = 0; indice < tamanho; indice++) {
-      soma += Number(cpf[indice]) * (tamanho + 1 - indice);
-    }
-    const resto = (soma * 10) % 11;
-    return resto === 10 ? 0 : resto;
-  };
-
-  return digito(9) === Number(cpf[9]) && digito(10) === Number(cpf[10]);
 }
 
 export function validarDataNascimento(valor) {

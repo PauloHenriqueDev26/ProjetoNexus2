@@ -1,9 +1,11 @@
+/** Valida e grava lançamentos com conta, categoria, meta, recorrência e arquivo opcionais. */
 import { ResultSetHeader, RowDataPacket } from 'mysql2';
 import { database } from './database';
 import { ApiError } from './errors';
 import { normalizeDate } from './validations';
 import { attachmentName, removeAttachment, storeAttachment } from './uploads';
 
+/** Aceita somente identificadores inteiros positivos representáveis com segurança. */
 export function positiveId(value: unknown): number | null {
   if ((typeof value !== 'string' && typeof value !== 'number') || !/^\d+$/.test(String(value)))
     return null;
@@ -11,10 +13,11 @@ export function positiveId(value: unknown): number | null {
   return Number.isSafeInteger(id) && id > 0 ? id : null;
 }
 
+/** Converte valores numéricos ou monetários brasileiros; retorna NaN quando o formato é inválido. */
 export function parseMoney(value: unknown): number {
   if (typeof value === 'number') {
     if (!Number.isFinite(value) || value < 0 || value > 9999999999.99) return Number.NaN;
-    // Reject extra decimals for numeric JSON just as for string/form inputs.
+    // Rejeita casas decimais excedentes tanto no JSON numérico quanto no texto dos formulários.
     const scaled = value * 100;
     return Math.abs(scaled - Math.round(scaled)) <=
       Number.EPSILON * Math.max(1, Math.abs(scaled)) * 2
@@ -31,12 +34,14 @@ export function parseMoney(value: unknown): number {
   return /^\d+(?:\.\d{1,2})?$/.test(clean) ? Number(clean) : Number.NaN;
 }
 
+/** Rejeita datas inexistentes e anos fora da faixa esperada pelo banco. */
 export function validTransactionDate(date: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || Number(date.slice(0, 4)) < 1000) return false;
   const parsed = new Date(`${date}T00:00:00Z`);
   return !Number.isNaN(parsed.getTime()) && parsed.toISOString().slice(0, 10) === date;
 }
 
+/** Confirma uma pendência do próprio usuário sob bloqueio, sem repetir uma confirmação já realizada. */
 export async function confirmTransaction(userId: number, transactionId: unknown) {
   const id = positiveId(transactionId);
   if (!id) throw new ApiError(400, 'Transação inválida.');
@@ -71,6 +76,7 @@ export async function confirmTransaction(userId: number, transactionId: unknown)
   }
 }
 
+/** Grava os registros relacionados em uma transação e remove o arquivo criado se houver falha. */
 export async function createTransaction(
   userId: number,
   body: Record<string, unknown>,
@@ -127,7 +133,7 @@ export async function createTransaction(
       if (date > clock.hoje)
         throw new ApiError(400, 'Receitas futuras não podem ser enviadas para uma meta.');
     }
-    // Serialize creation of accounts/categories for the same user.
+    // Bloqueia o usuário durante a criação de contas e categorias para evitar registros simultâneos duplicados.
     const [[user]] = await connection.query<RowDataPacket[]>(
       'SELECT id_usuario FROM usuarios WHERE id_usuario = ? FOR UPDATE',
       [userId],
@@ -206,6 +212,7 @@ export async function createTransaction(
       [userId, account.id, category.id, type.id, status.id, description, value, date, notes],
     );
 
+    // O aporte faz parte da mesma transação para não separar a receita do progresso da meta.
     if (metaId && goal) {
       await connection.execute(
         `INSERT INTO movimentacoes_metas (id_meta, id_transacao, tipo, valor, data_movimentacao, descricao)
@@ -228,6 +235,7 @@ export async function createTransaction(
       }
     }
 
+    // Guarda a regra mensal; as próximas ocorrências serão geradas como pendentes.
     if (body.recorrente === true || body.recorrente === 'true') {
       await connection.execute(
         "INSERT INTO recorrencias (id_usuario, id_transacao_origem, frequencia, data_inicio) VALUES (?, ?, 'mensal', ?)",
@@ -235,6 +243,7 @@ export async function createTransaction(
       );
     }
 
+    // O arquivo físico é compensado no bloco de erro caso o banco não confirme a gravação.
     let attachmentId: number | undefined;
     if (file) {
       storedFile = await storeAttachment(file);

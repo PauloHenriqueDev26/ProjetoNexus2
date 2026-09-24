@@ -1,10 +1,11 @@
+/** Lista avisos do usuário e registra a leitura das notificações no servidor. */
 import React, { useCallback, useState } from 'react';
 import { ScrollView, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialIcons';
-import BarraNavegacao from '../components/BarraNavegacao';
-import { AnimatedCard, AnimatedScreen } from '../components/AnimatedScreen';
-import { useAppStyles } from '../styles/styles';
+import BarraNavegacao from '../../components/BarraNavegacao';
+import { AnimatedCard, AnimatedScreen } from '../../components/AnimatedScreen';
+import { useAppStyles } from '../../styles/index';
 import { apiAutenticada } from '../../services/financeiro';
 
 export default function Notificacoes() {
@@ -34,6 +35,7 @@ export default function Notificacoes() {
     }, []),
   );
 
+  /** Registra a leitura da notificação e atualiza sua apresentação. */
   async function marcarComoLida(item) {
     if (item.lida) return;
     await apiAutenticada(`/notificacoes/${item.id}/lida`, { method: 'PATCH' });

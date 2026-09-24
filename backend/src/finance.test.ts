@@ -1,3 +1,4 @@
+/** Verifica precisão monetária, períodos do histórico e datas de recorrências mensais. */
 import { describe, expect, it } from 'vitest';
 import { parseMoney } from './transactions';
 import { monthPeriods, moneyDifference } from './finance';

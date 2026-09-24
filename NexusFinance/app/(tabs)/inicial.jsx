@@ -1,5 +1,6 @@
+/** Mostra saldo, resultados do mês e progresso da meta, com opção de ocultar valores. */
 import FinancialOverview from '../../components/FinancialOverview';
-import { AnimatedScreen } from '../components/AnimatedScreen';
+import { AnimatedScreen } from '../../components/AnimatedScreen';
 import React, { useState } from 'react';
 import AnimatedCircularProgress from '../../components/ProgressRing';
 import {
@@ -21,12 +22,13 @@ import Animated, {
   withSpring,
 } from 'react-native-reanimated';
 
-import { useAppStyles } from '../styles/styles';
-import BarraNavegacao from '../components/BarraNavegacao';
+import { useAppStyles } from '../../styles/index';
+import BarraNavegacao from '../../components/BarraNavegacao';
 import { formatBRL } from '../../services/financeiro';
 import { useResumoFinanceiro } from '../../hooks/useResumoFinanceiro';
 import { useSession } from '../../contexts/SessionContext';
 
+/** Escolhe a saudação conforme a hora local do aparelho. */
 function getSaudacao() {
   const hora = new Date().getHours();
   if (hora < 12) return 'Bom dia';
@@ -34,6 +36,7 @@ function getSaudacao() {
   return 'Boa noite';
 }
 
+/** Apresenta um indicador financeiro com ícone, valor e animação de entrada. */
 function QuickCard({
   icon,
   iconColor,
@@ -78,7 +81,6 @@ export default function Inicial() {
   const { inicioStyles: styles, colors, gradients, sharedStyles } = useAppStyles();
   const { width, fontScale } = useWindowDimensions();
   const compact = width < 380 || fontScale > 1.3;
-  const [quickWidth, setQuickWidth] = useState(160);
   const [saldoVisivel, setSaldoVisivel] = useState(true);
   const { usuario } = useSession();
   const { dados, erro, carregando, recarregar } = useResumoFinanceiro();
@@ -178,15 +180,12 @@ export default function Inicial() {
           ) : null}
           {!carregando && !erro ? (
             <>
-             <Text style={[styles.title, { marginTop: -10 }]}>
-  Visão Rápida
-</Text>
-              <Text style={{color: '#bdbdbd', marginTop: -15, marginBottom: 10}}>Realizado no mês até hoje</Text>
+              <Text style={[styles.title, { marginTop: -10 }]}>Visão Rápida</Text>
+              <Text style={{ color: '#bdbdbd', marginTop: -15, marginBottom: 10 }}>
+                Realizado no mês até hoje
+              </Text>
               <ScrollView
                 horizontal
-                onLayout={({ nativeEvent }) =>
-                  setQuickWidth(Math.max(160, Math.floor((nativeEvent.layout.width - 36) / 3)))
-                }
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={sharedStyles.paddingRight16}
               >

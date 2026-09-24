@@ -1,16 +1,12 @@
-import { useTheme } from '../../contexts/ThemeContext';
+/** Compartilha a área segura, o cabeçalho e as animações de entrada das telas e cartões. */
+import { useTheme } from '../contexts/ThemeContext';
 import React, { useState } from 'react';
-import { Pressable, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-import ScreenHeader, { ScreenHeaderHeightContext } from '../../components/ScreenHeader';
-import Animated, {
-  FadeInDown,
-  FadeInUp,
-  useAnimatedStyle,
-  useSharedValue,
-  withSpring,
-} from 'react-native-reanimated';
+import ScreenHeader, { ScreenHeaderHeightContext } from './ScreenHeader';
+import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
 
+/** Reserva a área segura e compartilha a altura do cabeçalho com o conteúdo da tela. */
 export function AnimatedScreen({
   children,
   style,
@@ -51,6 +47,7 @@ export function AnimatedScreen({
   );
 }
 
+/** Aplica uma animação de entrada ao cartão respeitando direção e atraso. */
 export function AnimatedCard({ children, style, delay = 0, direction = 'down' }) {
   const entering =
     direction === 'up'
@@ -60,37 +57,6 @@ export function AnimatedCard({ children, style, delay = 0, direction = 'down' })
   return (
     <Animated.View entering={entering} style={style}>
       {children}
-    </Animated.View>
-  );
-}
-
-export function AnimatedPressable({ children, style, onPress, delay = 0, direction = 'down' }) {
-  const scale = useSharedValue(1);
-  const animStyle = useAnimatedStyle(() => ({
-    transform: [{ scale: scale.value }],
-  }));
-
-  return (
-    <Animated.View
-      entering={
-        direction === 'up'
-          ? FadeInUp.delay(delay).duration(120)
-          : FadeInDown.delay(delay).duration(420).springify()
-      }
-      style={animStyle}
-    >
-      <Pressable
-        style={style}
-        onPressIn={() => {
-          scale.value = withSpring(0.97, { damping: 12, stiffness: 220 });
-        }}
-        onPressOut={() => {
-          scale.value = withSpring(1, { damping: 10, stiffness: 200 });
-        }}
-        onPress={onPress}
-      >
-        {children}
-      </Pressable>
     </Animated.View>
   );
 }

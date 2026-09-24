@@ -1,9 +1,10 @@
+/** Apresenta os gráficos do resumo financeiro e permite tentar novamente após uma falha. */
 import React from 'react';
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
-import BarraNavegacao from '../components/BarraNavegacao';
-import { AnimatedScreen } from '../components/AnimatedScreen';
+import BarraNavegacao from '../../components/BarraNavegacao';
+import { AnimatedScreen } from '../../components/AnimatedScreen';
 import FinancialOverview from '../../components/FinancialOverview';
-import { useAppStyles } from '../styles/styles';
+import { useAppStyles } from '../../styles/index';
 import { useResumoFinanceiro } from '../../hooks/useResumoFinanceiro';
 
 export default function Dashboard() {

@@ -1,4 +1,5 @@
-// All coordinates are measured in window space, including native keyboard frames.
+/** Calcula sobreposição e rolagem do teclado sem depender de componentes React. */
+// Todas as coordenadas usam a janela como referência, inclusive as do teclado nativo.
 export function keyboardOverlap(viewport, keyboard) {
   if (!keyboard || keyboard.height <= 0) return 0;
   if (
@@ -12,7 +13,7 @@ export function keyboardOverlap(viewport, keyboard) {
 export function focusedScrollOffset({ viewport, input, keyboard, offset, gap = 24 }) {
   const bottom = viewport.y + viewport.height - keyboardOverlap(viewport, keyboard) - gap;
   const top = viewport.y + 12;
-  // For a multiline field taller than the visible area, keep its top reachable.
+  // Se um campo de várias linhas exceder a área visível, mantém seu início acessível.
   const delta =
     input.y + input.height > bottom
       ? Math.min(input.y + input.height - bottom, input.y - top)

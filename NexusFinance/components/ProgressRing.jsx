@@ -1,3 +1,4 @@
+/** Exibe o progresso circular com implementações compatíveis com a web e os aplicativos nativos. */
 import React from 'react';
 import { Platform, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
@@ -5,7 +6,7 @@ import { AnimatedCircularProgress } from 'react-native-circular-progress';
 
 export default function ProgressRing(props) {
   if (Platform.OS !== 'web') return <AnimatedCircularProgress {...props} />;
-  // The library's SVG transform-origin attribute is invalid in React DOM.
+  // Na web, usa SVG próprio porque o atributo transform-origin da biblioteca é incompatível com o React DOM.
   const { size, width, fill, tintColor, backgroundColor, children } = props;
   const progress = Math.max(0, Math.min(100, Number(fill) || 0));
   const radius = (size - width) / 2;

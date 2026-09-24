@@ -1,3 +1,4 @@
+/** Expõe cadastro, login, consulta de sessão e recuperação de senha. */
 import { randomInt } from 'crypto';
 import { Router } from 'express';
 import bcrypt from 'bcryptjs';
@@ -32,6 +33,7 @@ interface RecoveryRow extends RowDataPacket {
 
 export const authRoutes = Router();
 
+/** Cria o usuário, as preferências e a conta inicial na mesma transação. */
 authRoutes.post('/cadastro', async (req, res, next) => {
   try {
     const nome = typeof req.body.nome === 'string' ? req.body.nome.trim() : '';
@@ -91,6 +93,7 @@ authRoutes.post('/cadastro', async (req, res, next) => {
   }
 });
 
+/** Confere a senha armazenada como hash antes de emitir a sessão. */
 authRoutes.post('/login', async (req, res, next) => {
   try {
     const email = normalizeEmail(req.body.email);
@@ -118,6 +121,7 @@ authRoutes.post('/login', async (req, res, next) => {
   }
 });
 
+/** Retorna os dados de um usuário ativo identificado pelo token. */
 authRoutes.get('/sessao', authenticate, async (req: AuthenticatedRequest, res, next) => {
   try {
     const [users] = await database.query<UserRow[]>(
@@ -139,10 +143,12 @@ authRoutes.get('/sessao', authenticate, async (req: AuthenticatedRequest, res, n
   }
 });
 
+/** Informa ao cliente que o token local deve ser removido. */
 authRoutes.post('/logout', authenticate, (_req, res) => {
   res.json({ mensagem: 'Logout realizado. Remova o token salvo no aplicativo.' });
 });
 
+/** Gera um código temporário e evita revelar se o e-mail existe. */
 authRoutes.post('/recuperar-senha', async (req, res, next) => {
   try {
     const email = normalizeEmail(req.body.email);
@@ -173,6 +179,7 @@ authRoutes.post('/recuperar-senha', async (req, res, next) => {
   }
 });
 
+/** Verifica o código de recuperação sem consumi-lo. */
 authRoutes.post('/validar-codigo', async (req, res, next) => {
   try {
     const email = normalizeEmail(req.body.email);
@@ -185,6 +192,7 @@ authRoutes.post('/validar-codigo', async (req, res, next) => {
   }
 });
 
+/** Atualiza a senha e marca o código utilizado na mesma transação. */
 authRoutes.post('/nova-senha', async (req, res, next) => {
   try {
     const email = normalizeEmail(req.body.email);
@@ -223,6 +231,7 @@ authRoutes.post('/nova-senha', async (req, res, next) => {
   }
 });
 
+/** Busca o código não utilizado mais recente e compara seu hash antes de autorizar a recuperação. */
 async function findValidRecovery(email: string, code: string): Promise<RecoveryRow | null> {
   if (!isValidEmail(email) || !/^\d{6}$/.test(code)) return null;
   const [rows] = await database.query<RecoveryRow[]>(

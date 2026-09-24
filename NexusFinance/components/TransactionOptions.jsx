@@ -1,3 +1,4 @@
+/** Compartilha os seletores de categoria e conta, o cadastro de categorias e o controle de anexos. */
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -13,6 +14,7 @@ import Icon from '@expo/vector-icons/MaterialIcons';
 import { useTheme, useThemedStyles } from '../contexts/ThemeContext';
 import { FormInput, FormScrollView, KeyboardArea } from './FormLayout';
 
+/** Exibe as opções em um modal e informa a seleção ao componente responsável. */
 function OptionSelector({ label, items, value, onChange, disabled }) {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -79,6 +81,7 @@ function OptionSelector({ label, items, value, onChange, disabled }) {
   );
 }
 
+/** Reúne os campos de categoria e conta com a criação de uma categoria personalizada. */
 export function TransactionSelectors({ options, disabled, showAccountType = true }) {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);
@@ -86,6 +89,7 @@ export function TransactionSelectors({ options, disabled, showAccountType = true
   const [nome, setNome] = useState('');
   const [erro, setErro] = useState('');
   const [saving, setSaving] = useState(false);
+  /** Valida o nome e mantém o modal aberto se o cadastro da categoria falhar. */
   async function salvarCategoria() {
     if (saving) return;
     if (nome.trim().length < 2) {
@@ -207,6 +211,7 @@ export function TransactionSelectors({ options, disabled, showAccountType = true
   );
 }
 
+/** Apresenta o arquivo selecionado e as ações para escolher ou remover o anexo. */
 export function TransactionAttachment({ options, disabled }) {
   const { colors } = useTheme();
   const styles = useThemedStyles(createStyles);

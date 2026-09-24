@@ -1,3 +1,4 @@
+/** Persiste o token no navegador ou no armazenamento seguro nativo, conforme a plataforma. */
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 

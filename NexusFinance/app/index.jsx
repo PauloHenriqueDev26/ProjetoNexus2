@@ -1,3 +1,4 @@
+/** Redireciona a entrada do aplicativo conforme a sessão restaurada. */
 import { Redirect } from 'expo-router';
 import { useSession } from '../contexts/SessionContext';
 

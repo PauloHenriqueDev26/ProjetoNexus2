@@ -1,3 +1,4 @@
+/** Consulta opções financeiras, cadastra categorias e entrega anexos pertencentes ao usuário. */
 import { Router } from 'express';
 import { RowDataPacket, ResultSetHeader } from 'mysql2';
 import path from 'node:path';
@@ -9,6 +10,7 @@ import { uploadDirectory } from '../uploads';
 
 export const financeOptionsRoutes = Router();
 
+/** Lista categorias globais e pessoais do tipo solicitado e os tipos de conta. */
 financeOptionsRoutes.get('/financeiro/opcoes', async (req: AuthenticatedRequest, res, next) => {
   try {
     const tipo = req.query.tipo;
@@ -37,6 +39,7 @@ financeOptionsRoutes.get('/financeiro/opcoes', async (req: AuthenticatedRequest,
   }
 });
 
+/** Reutiliza categorias existentes ou cria uma nova sob bloqueio do usuário. */
 financeOptionsRoutes.post(
   '/financeiro/categorias',
   async (req: AuthenticatedRequest, res, next) => {
@@ -94,6 +97,7 @@ financeOptionsRoutes.post(
   },
 );
 
+/** Confere a propriedade do anexo antes de entregar o arquivo para download. */
 financeOptionsRoutes.get('/financeiro/anexos/:id', async (req: AuthenticatedRequest, res, next) => {
   try {
     const id = positiveId(req.params.id);

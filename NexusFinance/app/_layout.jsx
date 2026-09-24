@@ -1,7 +1,8 @@
+/** Organiza os provedores globais e libera as rotas conforme o estado da sessão. */
 import { Stack } from 'expo-router';
 import { SessionProvider, useSession } from '../contexts/SessionContext';
 import { AppThemeProvider } from '../contexts/ThemeContext';
-import { useAppStyles } from './styles/styles';
+import { useAppStyles } from '../styles/index';
 
 function Routes() {
   const { navigationScreenOptions } = useAppStyles();
@@ -24,9 +25,7 @@ function Routes() {
 
       <Stack.Protected guard={autenticado}>
         <Stack.Screen name="receita/novaReceita" options={{ title: 'Nova receita' }} />
-        <Stack.Screen name="receita/editarReceita" options={{ title: 'Editar receita' }} />
         <Stack.Screen name="despesa/novaDespesa" options={{ title: 'Nova despesa' }} />
-        <Stack.Screen name="despesa/editarDespesa" options={{ title: 'Editar despesa' }} />
         <Stack.Screen name="menus/centralAjuda" options={{ title: 'Central de ajuda' }} />
         <Stack.Screen name="menus/meuCadastro" options={{ title: 'Meu cadastro' }} />
         <Stack.Screen name="menus/sobreApp" options={{ title: 'Sobre o app' }} />

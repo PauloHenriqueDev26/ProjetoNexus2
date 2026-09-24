@@ -1,7 +1,9 @@
+/** Verifica a legibilidade dos textos e botões nas paletas clara e escura. */
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { palettes } from '../theme/palettes.js';
 
+/** Calcula a luminância relativa de uma cor sRGB para verificar a legibilidade. */
 function luminance(color) {
   const values = color
     .slice(1)
@@ -10,6 +12,7 @@ function luminance(color) {
     .map((v) => (v <= 0.04045 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4));
   return values[0] * 0.2126 + values[1] * 0.7152 + values[2] * 0.0722;
 }
+/** Calcula a razão de contraste entre duas cores. */
 function contrast(a, b) {
   const x = luminance(a),
     y = luminance(b);

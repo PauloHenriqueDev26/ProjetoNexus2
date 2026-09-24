@@ -1,12 +1,13 @@
+/** Define uma nova senha usando o e-mail e o código de recuperação guardados em memória. */
 import { KeyboardArea, FormScrollView, FormInput } from '../../components/FormLayout';
 import { useState } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
-import { AnimatedCard, AnimatedScreen } from '../components/AnimatedScreen';
+import { AnimatedCard, AnimatedScreen } from '../../components/AnimatedScreen';
 import { apiRequest } from '../../services/api';
 import { limparRecuperacaoPendente, obterRecuperacaoPendente } from '../../services/authFlow';
 import { erroSenha } from '../../services/validations';
-import { useAppStyles } from '../styles/styles';
+import { useAppStyles } from '../../styles/index';
 
 export default function NovaSenha() {
   const { colors, keyboardStyles, novaSenhaStyles: styles } = useAppStyles();

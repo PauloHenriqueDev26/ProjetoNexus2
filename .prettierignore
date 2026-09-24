@@ -1,0 +1,6 @@
+# Dependências, arquivos gerados e lockfiles são mantidos pelas respectivas ferramentas.
+**/node_modules/
+**/dist/
+**/.expo/
+**/package-lock.json
+**/expo-env.d.ts

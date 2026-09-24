@@ -1,11 +1,12 @@
+/** Solicita um código por e-mail e o valida antes de abrir a definição da nova senha. */
 import { KeyboardArea, FormScrollView, FormInput } from '../../components/FormLayout';
 import { useState } from 'react';
 import { Text, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
-import { AnimatedCard, AnimatedScreen } from '../components/AnimatedScreen';
+import { AnimatedCard, AnimatedScreen } from '../../components/AnimatedScreen';
 import { apiRequest } from '../../services/api';
 import { salvarRecuperacaoPendente } from '../../services/authFlow';
-import { useAppStyles } from '../styles/styles';
+import { useAppStyles } from '../../styles/index';
 
 export default function RecuperarSenha() {
   const { colors, keyboardStyles, recuperarSenhaStyles: styles } = useAppStyles();

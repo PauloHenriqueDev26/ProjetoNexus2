@@ -1,9 +1,11 @@
+/** Baixa anexos autenticados e exporta transações em CSV na web e nos dispositivos móveis. */
 import { Platform } from 'react-native';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
 import { API_URL } from './api';
 import { obterToken } from './session';
 
+/** Cria um link temporário para download e libera a URL após o uso. */
 function baixarNoNavegador(blob, nome) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -15,6 +17,7 @@ function baixarNoNavegador(blob, nome) {
   setTimeout(() => URL.revokeObjectURL(url), 60000);
 }
 
+/** Baixa o arquivo com autenticação e remove a cópia temporária após o compartilhamento nativo. */
 export async function abrirAnexo(anexo) {
   const token = await obterToken();
   if (!token) throw new Error('Sua sessão expirou. Entre novamente.');
@@ -39,10 +42,11 @@ export async function abrirAnexo(anexo) {
   }
 }
 
+/** Escapa os campos e usa separador brasileiro e marca de codificação para preservar os acentos. */
 export async function exportarCSV(transacoes) {
   const cell = (value) => {
     const text = String(value ?? '');
-    // Prevent spreadsheet applications from interpreting user text as formulas.
+    // Impede que programas de planilha interpretem textos do usuário como fórmulas.
     return `"${(/^[\s]*[=+@-]/.test(text) ? "'" + text : text).replace(/"/g, '""')}"`;
   };
   const rows = [

@@ -1,6 +1,8 @@
+/** Envia o código de recuperação por SMTP ou o registra no modo de desenvolvimento configurado. */
 import nodemailer from 'nodemailer';
 import { config } from './config';
 
+/** Envia o código ao endereço informado usando as credenciais SMTP configuradas. */
 export async function sendRecoveryCode(email: string, code: string): Promise<void> {
   if (!config.email.user || !config.email.password) {
     console.log(`[RECUPERAÇÃO] Código para ${email}: ${code}`);

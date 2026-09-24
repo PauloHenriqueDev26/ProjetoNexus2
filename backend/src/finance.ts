@@ -1,3 +1,4 @@
+/** Calcula saldos, previsões, categorias e histórico a partir de uma leitura consistente do banco. */
 import { RowDataPacket } from 'mysql2';
 import { PoolConnection } from 'mysql2/promise';
 import { database } from './database';
@@ -5,6 +6,7 @@ import { database } from './database';
 export const cents = (value: number | string) => Math.round(Number(value) * 100);
 export const moneyDifference = (a: number, b: number) => (cents(a) - cents(b)) / 100;
 
+/** Produz os seis períodos mensais, em ordem cronológica, terminando no mês informado. */
 export function monthPeriods(today: string) {
   const [year, month] = today.split('-').map(Number);
   return Array.from({ length: 6 }, (_, i) =>
@@ -12,6 +14,7 @@ export function monthPeriods(today: string) {
   );
 }
 
+/** Mantém todas as consultas do resumo na mesma transação de leitura. */
 export async function financialSummary(userId: number) {
   const connection = await database.getConnection();
   try {
@@ -28,8 +31,9 @@ export async function financialSummary(userId: number) {
   }
 }
 
+/** Separa valores realizados e previstos e acumula os cálculos em centavos. */
 async function readSummary(connection: PoolConnection, userId: number) {
-  // Both queries read the same snapshot, even when a transaction is confirmed concurrently.
+  // As duas consultas usam a mesma visão dos dados, mesmo que outro processo confirme um lançamento.
   const [[row]] = await connection.query<RowDataPacket[]>(
     `SELECT
     DATE_FORMAT(CURDATE(), '%Y-%m-%d') AS hoje,

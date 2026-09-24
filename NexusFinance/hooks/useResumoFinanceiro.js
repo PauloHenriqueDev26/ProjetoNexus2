@@ -1,3 +1,4 @@
+/** Recarrega o resumo ao entrar na tela e ignora respostas após a perda de foco. */
 import { useCallback, useState } from 'react';
 import { useFocusEffect } from 'expo-router';
 import { apiAutenticada } from '../services/financeiro';

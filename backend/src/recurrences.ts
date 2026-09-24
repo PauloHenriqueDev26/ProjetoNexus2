@@ -1,7 +1,8 @@
+/** Gera lançamentos mensais pendentes e atualiza o cursor de cada regra na mesma transação. */
 import { RowDataPacket } from 'mysql2';
 import { database } from './database';
 
-// Keep the original day as the anchor, including after February and short months.
+// Preserva o dia original como referência, inclusive após fevereiro e meses mais curtos.
 export function monthlyDate(start: string, offset: number): string {
   const [year, month, day] = start.split('-').map(Number);
   const last = new Date(Date.UTC(year, month + offset, 0));
@@ -12,11 +13,12 @@ export function monthlyDate(start: string, offset: number): string {
     .slice(0, 10);
 }
 
+/** Recupera meses ainda não gerados até o limite da regra ou o fim do mês atual. */
 export async function generateRecurrences(userId?: number) {
   const connection = await database.getConnection();
   try {
     await connection.beginTransaction();
-    // Lock the cursor with its inserts, so retries and multiple API processes cannot duplicate occurrences.
+    // Bloqueia o cursor junto das inserções para impedir duplicações em novas tentativas ou processos simultâneos.
     const [rules] = await connection.query<RowDataPacket[]>(
       `SELECT r.*,
       DATE_FORMAT(r.data_inicio, '%Y-%m-%d') AS inicio,

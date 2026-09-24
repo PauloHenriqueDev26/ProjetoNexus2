@@ -1,3 +1,4 @@
+/** Adiciona o controle de geração de recorrências aos bancos existentes sem recriar suas tabelas. */
 import { RowDataPacket } from 'mysql2';
 import { database } from './database';
 

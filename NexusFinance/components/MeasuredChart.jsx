@@ -1,7 +1,8 @@
+/** Ajusta os gráficos à largura real disponível no cartão. */
 import React, { useState } from 'react';
 import { View } from 'react-native';
 
-// Measure the actual card content, including split-screen and rotation changes.
+// Mede a área real do cartão, inclusive após rotação ou divisão da tela.
 export default function MeasuredChart({ children }) {
   const [width, setWidth] = useState(0);
   return (

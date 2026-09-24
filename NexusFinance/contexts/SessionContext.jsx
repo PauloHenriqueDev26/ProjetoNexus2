@@ -1,3 +1,4 @@
+/** Restaura a sessão persistida e disponibiliza autenticação e perfil às telas. */
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { apiRequest } from '../services/api';
 import { obterToken, removerToken, salvarToken } from '../services/session';
@@ -10,6 +11,7 @@ export function SessionProvider({ children }) {
   const [carregando, setCarregando] = useState(true);
 
   useEffect(() => {
+    /** Consulta a sessão salva antes de liberar a navegação autenticada. */
     async function restaurarSessao() {
       const savedToken = await obterToken();
       if (!savedToken) {
@@ -31,12 +33,14 @@ export function SessionProvider({ children }) {
     restaurarSessao();
   }, []);
 
+  /** Persiste o token antes de atualizar o estado compartilhado da sessão. */
   async function iniciarSessao(newToken, user) {
     await salvarToken(newToken);
     setToken(newToken);
     setUsuario(user);
   }
 
+  /** Apaga o token persistido e limpa os dados do usuário na interface. */
   async function encerrarSessao() {
     await removerToken();
     setToken(null);
@@ -59,6 +63,7 @@ export function SessionProvider({ children }) {
   return <SessionContext.Provider value={value}>{children}</SessionContext.Provider>;
 }
 
+/** Expõe o contexto e sinaliza o uso fora do provedor obrigatório. */
 export function useSession() {
   const context = useContext(SessionContext);
   if (!context) throw new Error('useSession deve ser usado dentro de SessionProvider.');

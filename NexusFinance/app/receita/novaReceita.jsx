@@ -1,3 +1,4 @@
+/** Registra receitas e permite destinar o valor a uma meta ativa. */
 import DateInput from '../../components/DateInput';
 import { TransactionSelectors, TransactionAttachment } from '../../components/TransactionOptions';
 import { useTransactionOptions } from '../../hooks/useTransactionOptions';
@@ -10,8 +11,8 @@ import React, { useState, useRef } from 'react';
 import { Alert, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialIcons';
-import { AnimatedScreen } from '../components/AnimatedScreen';
-import { useAppStyles } from '../styles/styles';
+import { AnimatedScreen } from '../../components/AnimatedScreen';
+import { useAppStyles } from '../../styles/index';
 import { apiAutenticada, formatBRL, today } from '../../services/financeiro';
 
 export default function NovaReceita() {
@@ -32,6 +33,7 @@ export default function NovaReceita() {
   const [erro, setErro] = useState('');
   const [salvando, setSalvando] = useState(false);
 
+  /** Busca as metas disponíveis e atualiza o estado usado pela tela. */
   async function carregarMetas() {
     setCarregandoMetas(true);
     setErroMetas('');
@@ -47,6 +49,7 @@ export default function NovaReceita() {
     }
   }
 
+  /** Limpa a seleção ao desativar o aporte e carrega metas quando necessário. */
   async function alterarEnvioParaMeta(ativo) {
     setEnviarParaMeta(ativo);
     setErro('');
@@ -58,6 +61,7 @@ export default function NovaReceita() {
     if (!metas.length) await carregarMetas();
   }
 
+  /** Bloqueia toques repetidos até a conclusão do cadastro do lançamento. */
   async function salvar() {
     if (submitLock.current) return;
     if (enviarParaMeta && !recebida) {

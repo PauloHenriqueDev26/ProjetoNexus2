@@ -1,3 +1,4 @@
+/** Configura a API HTTP, registra as rotas e converte falhas em respostas JSON. */
 import cors from 'cors';
 import express, { NextFunction, Request, Response } from 'express';
 import { authRoutes } from './routes/auth.routes';
@@ -10,6 +11,7 @@ export const app = express();
 app.use(cors());
 app.use(express.json());
 
+/** Confirma que a API HTTP está disponível. */
 app.get('/', (_req, res) => {
   res.json({ mensagem: 'API Nexus Finance funcionando.' });
 });
@@ -21,20 +23,19 @@ app.use((_req, res) => {
   res.status(404).json({ mensagem: 'Rota não encontrada.' });
 });
 
+// Os quatro parâmetros identificam este middleware como tratador de erros do Express.
 app.use((error: Error, _req: Request, res: Response, _next: NextFunction) => {
   if (error instanceof ApiError) {
     res.status(error.status).json({ mensagem: error.message });
     return;
   }
   if (error instanceof multer.MulterError) {
-    res
-      .status(400)
-      .json({
-        mensagem:
-          error.code === 'LIMIT_FILE_SIZE'
-            ? 'O arquivo deve ter no máximo 10 MB.'
-            : 'Envie apenas um arquivo e confira os dados do formulário.',
-      });
+    res.status(400).json({
+      mensagem:
+        error.code === 'LIMIT_FILE_SIZE'
+          ? 'O arquivo deve ter no máximo 10 MB.'
+          : 'Envie apenas um arquivo e confira os dados do formulário.',
+    });
     return;
   }
   if ((error as { type?: string }).type === 'entity.parse.failed') {

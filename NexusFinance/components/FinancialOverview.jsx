@@ -1,10 +1,11 @@
+/** Renderiza o histórico de resultados e a participação das despesas por categoria. */
 import React from 'react';
 import { Pressable, StyleSheet, Text, View, useWindowDimensions } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { router } from 'expo-router';
 import MeasuredChart from './MeasuredChart';
 import { useThemedStyles } from '../contexts/ThemeContext';
-import { useAppStyles } from '../app/styles/styles';
+import { useAppStyles } from '../styles/index';
 import { formatBRL } from '../services/financeiro';
 
 const MONTHS = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
@@ -35,9 +36,7 @@ export default function FinancialOverview({ dados, visible = true, home = false 
   const { colors } = useAppStyles();
   const { width, fontScale } = useWindowDimensions();
   const wide = width >= 900 && fontScale <= 1.3;
-  const amount = (value) => (visible ? formatBRL(value) : '••••••');
   const current = dados.atual;
-  const forecast = dados.previsao;
   const hasHistory = dados.historico.some((item) => item.receitas !== 0 || item.despesas !== 0);
   const palette = [
     colors.primary,
@@ -47,13 +46,6 @@ export default function FinancialOverview({ dados, visible = true, home = false 
     colors.danger,
     colors.success,
   ];
-  const reference = dados.dataReferencia
-    ? `Até ${dados.dataReferencia.slice(8, 10)}/${dados.dataReferencia.slice(5, 7)}/${dados.dataReferencia.slice(0, 4)}`
-    : 'Mês atual';
-  const comparison =
-    dados.economia.percentual === null
-      ? 'Sem base de comparação'
-      : `${dados.economia.percentual >= 0 ? '+' : ''}${dados.economia.percentual.toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 })}% em relação ao mês anterior completo`;
 
   return (
     <View style={styles.overview}>
@@ -198,25 +190,9 @@ const createStyles = (colors) =>
     caption: { fontSize: 13, lineHeight: 20, color: colors.textSecondary },
     link: { minHeight: 44, justifyContent: 'center' },
     linkText: { color: colors.textLink, fontWeight: '600', fontSize: 13 },
-    summaryRow: {
-      paddingVertical: 14,
-      borderBottomWidth: 1,
-      borderBottomColor: colors.divider,
-      gap: 8,
-    },
     rowLabel: { color: colors.textPrimary, fontSize: 14, fontWeight: '600', flexShrink: 1 },
-    values: { flexDirection: 'row', flexWrap: 'wrap', gap: 16 },
-    valueColumn: { flex: 1, minWidth: 105, gap: 4 },
     small: { color: colors.textSecondary, fontSize: 12, lineHeight: 18 },
     amount: { color: colors.textPrimary, fontSize: 16, fontWeight: '700', flexShrink: 1 },
-    forecast: {
-      marginTop: 16,
-      padding: 14,
-      borderRadius: 14,
-      backgroundColor: colors.surfaceElevated,
-      gap: 8,
-    },
-    bigAmount: { fontSize: 24, fontWeight: '700' },
     empty: { marginVertical: 20, fontSize: 14, lineHeight: 22, color: colors.textSecondary },
     history: { marginTop: 12, gap: 6 },
     historyRow: { flexDirection: 'row', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 },

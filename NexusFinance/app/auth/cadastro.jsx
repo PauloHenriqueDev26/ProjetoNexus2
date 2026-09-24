@@ -1,12 +1,13 @@
+/** Valida os dados pessoais e os mantém em memória para a etapa de criação da senha. */
 import DateInput from '../../components/DateInput';
 import { KeyboardArea, FormScrollView, FormInput } from '../../components/FormLayout';
 import { useState } from 'react';
 import { Image, View, Text, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
-import { AnimatedScreen } from '../components/AnimatedScreen';
+import { AnimatedScreen } from '../../components/AnimatedScreen';
 import { salvarCadastroPendente } from '../../services/authFlow';
 import { validarDataNascimento, validarEmail } from '../../services/validations';
-import { useAppStyles } from '../styles/styles';
+import { useAppStyles } from '../../styles/index';
 
 export default function Cadastro() {
   const { colors, cadastroStyles: styles, keyboardStyles, sharedStyles } = useAppStyles();

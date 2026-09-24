@@ -9,9 +9,9 @@ Documento rápido explicando, de forma básica, cada funcionalidade e onde ela f
 
 **Telas Principais (abas)**
 
-- **Início**: `NexusFinance/app/(tabs)/inicial.jsx` — Tela principal com perfil resumido, saldo atual, cards de Visão Rápida (Receitas, Despesas, Economia), progresso de metas e card de Distribuição da renda (agora mostrando dados do mês anterior). Também contém a barra de navegação inferior e menu expandido.
+- **Início**: `NexusFinance/app/(tabs)/inicial.jsx` — Saldo disponível, resultados realizados do mês, progresso da meta, histórico e despesas por categoria. Permite ocultar os valores.
 - **Fluxo Financeiro**: `NexusFinance/app/(tabs)/fluxoFinanceiro.jsx` — Lista de transações (Receitas/Despesas), filtros por aba (Geral/Receitas/Despesas), cálculo de totais (receitas, despesas e saldo) e exibição detalhada de cada lançamento.
-- **Dashboard**: `NexusFinance/app/(tabs)/dashboard.jsx` — Visualizações gráficas (pie/line) por categoria e evolução do saldo; resumo mensal com percentuais visuais.
+- **Dashboard**: `NexusFinance/app/(tabs)/dashboard.jsx` — Histórico dos resultados dos últimos seis meses e participação das despesas realizadas por categoria.
 - **Relatórios**: `NexusFinance/app/(tabs)/relatorios.jsx` — Gráfico de barras Receitas x Despesas por período e resumo com opções de exportar/compartilhar.
 - **Metas**: `NexusFinance/app/(tabs)/metas.jsx` — Gerenciamento de metas financeiras: progresso, listagem e navegação para criação/edição.
 - **Perfil**: `NexusFinance/app/(tabs)/perfil.jsx` — Dados do usuário, resumo da conta (saldo, receitas, despesas, economia) e links para configurações e relatórios.
@@ -23,12 +23,12 @@ Documento rápido explicando, de forma básica, cada funcionalidade e onde ela f
 
 **Lançamentos (Receitas e Despesas)**
 
-- **Criar/Editar Receita**: `NexusFinance/app/receita/novaReceita.jsx`, `NexusFinance/app/receita/editarReceita.jsx` — Formulários para registrar/editar receitas (valor, categoria, data, descrição).
-- **Criar/Editar Despesa**: `NexusFinance/app/despesa/novaDespesa.jsx`, `NexusFinance/app/despesa/editarDespesa.jsx` — Formulários para registrar/editar despesas.
+- **Criar Receita**: `NexusFinance/app/receita/novaReceita.jsx` — Registra receitas; a edição de lançamentos ainda não está implementada.
+- **Criar Despesa**: `NexusFinance/app/despesa/novaDespesa.jsx` — Registra despesas; a edição de lançamentos ainda não está implementada.
 
 **Menus e Páginas auxiliares**
 
-- `NexusFinance/app/menus/*` — Páginas estáticas como Central de Ajuda, Sobre o App, Meu Cadastro.
+- `NexusFinance/app/menus/*` — Central de Ajuda, Sobre o App e formulário de atualização dos dados pessoais.
 - `NexusFinance/app/(tabs)/configuracoes.jsx` — Configurações do aplicativo.
 
 **Dados e utilitários**
@@ -43,7 +43,7 @@ Documento rápido explicando, de forma básica, cada funcionalidade e onde ela f
 
 **Estilos**
 
-- `NexusFinance/app/styles/` — Contém arquivos de estilo por tela (ex.: `inicio.js`, `barraNavegacao.js`, `fluxoFinanceiro.js`, etc.). A `barraNavegacao.js` contém estilos para a barra inferior, overlay e menu expandido.
+- `NexusFinance/styles/` — Estilos agrupados por área: autenticação, financeiro, conta, navegação e elementos compartilhados.
 
 **Comportamentos importantes**
 

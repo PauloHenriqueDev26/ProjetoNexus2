@@ -1,3 +1,4 @@
+/** Verifica os fluxos financeiros com HTTP, MySQL e arquivos em recursos temporários isolados. */
 import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import mysql, { Connection, ResultSetHeader, RowDataPacket } from 'mysql2/promise';
 import { readFile, mkdtemp, readdir, unlink, rmdir } from 'node:fs/promises';
@@ -5,7 +6,7 @@ import path from 'node:path';
 import os from 'node:os';
 import { Server } from 'node:http';
 
-// Opt in explicitly: this suite creates and drops only its own isolated database.
+// A execução é opcional: esta suíte cria e remove somente o próprio banco de teste isolado.
 describe.skipIf(process.env.NEXUS_MYSQL_TEST !== '1')(
   'finance API with real MySQL and files',
   () => {

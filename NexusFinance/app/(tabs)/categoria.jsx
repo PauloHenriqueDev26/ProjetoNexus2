@@ -1,7 +1,8 @@
+/** Consulta e cadastra categorias separadas por tipo de lançamento. */
 import { useTheme } from '../../contexts/ThemeContext';
 import React, { useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
-import { AnimatedScreen } from '../components/AnimatedScreen';
+import { AnimatedScreen } from '../../components/AnimatedScreen';
 import { TransactionSelectors } from '../../components/TransactionOptions';
 import { useTransactionOptions } from '../../hooks/useTransactionOptions';
 

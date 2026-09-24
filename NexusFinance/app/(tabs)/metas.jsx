@@ -1,15 +1,19 @@
+/** Gerencia a criação, edição e exclusão de metas e apresenta o progresso de cada objetivo. */
 import { KeyboardArea, FormScrollView, FormInput } from '../../components/FormLayout';
 import React, { useCallback, useRef, useState } from 'react';
 import { FlatList, Modal, Text, TouchableOpacity, View } from 'react-native';
 import { useFocusEffect } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialIcons';
-import BarraNavegacao from '../components/BarraNavegacao';
-import { AnimatedCard, AnimatedScreen } from '../components/AnimatedScreen';
-import { useAppStyles } from '../styles/styles';
+import BarraNavegacao from '../../components/BarraNavegacao';
+import { AnimatedCard, AnimatedScreen } from '../../components/AnimatedScreen';
+import { useAppStyles } from '../../styles/index';
 import { apiAutenticada, formatBRL } from '../../services/financeiro';
 
+/** Converte o valor da meta para o formato decimal usado no formulário. */
 function valorParaInput(valor) {
-  return Number(valor || 0).toFixed(2).replace('.', ',');
+  return Number(valor || 0)
+    .toFixed(2)
+    .replace('.', ',');
 }
 
 export default function Metas() {
@@ -43,6 +47,7 @@ export default function Metas() {
     }, [carregarMetas]),
   );
 
+  /** Limpa os campos e a seleção para impedir que uma nova meta reutilize dados anteriores. */
   function limparFormulario() {
     setNomeMeta('');
     setValorMeta('');
@@ -51,18 +56,21 @@ export default function Metas() {
     setModoEdicao(false);
   }
 
+  /** Fecha o formulário e descarta o estado temporário de edição. */
   function fecharModal() {
     setModalVisible(false);
     setErro('');
     limparFormulario();
   }
 
+  /** Prepara um formulário vazio para cadastrar uma meta. */
   function abrirNovaMeta() {
     limparFormulario();
     setErro('');
     setModalVisible(true);
   }
 
+  /** Preenche o formulário com os dados da meta selecionada. */
   function abrirEdicao(item) {
     setMetaSelecionada(item);
     setModoEdicao(true);
@@ -73,6 +81,7 @@ export default function Metas() {
     setModalVisible(true);
   }
 
+  /** Escolhe criação ou atualização e impede envios duplicados enquanto a API responde. */
   async function salvarMeta() {
     if (submitLock.current) return;
     submitLock.current = true;
@@ -95,6 +104,7 @@ export default function Metas() {
     }
   }
 
+  /** Exclui a meta escolhida na confirmação e recarrega a lista. */
   async function excluirMeta() {
     if (!metaParaExcluir || submitLock.current) return;
     submitLock.current = true;
@@ -114,12 +124,16 @@ export default function Metas() {
     }
   }
 
+  /** Apresenta o objetivo, o progresso limitado a 100% e as ações da meta. */
   function renderItem({ item, index }) {
     const porcentagem = item.objetivo > 0 ? Math.min((item.atual / item.objetivo) * 100, 100) : 0;
     const concluida = item.status === 'concluida' || porcentagem >= 100;
 
     return (
-      <AnimatedCard style={[styles.card, concluida && styles.cardConcluida]} delay={80 + index * 60}>
+      <AnimatedCard
+        style={[styles.card, concluida && styles.cardConcluida]}
+        delay={80 + index * 60}
+      >
         <View style={styles.cardHeader}>
           <Icon
             name={concluida ? 'check-circle' : 'track-changes'}
@@ -262,11 +276,7 @@ export default function Metas() {
               >
                 <Text style={styles.cancelarTexto}>Cancelar</Text>
               </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.excluir}
-                onPress={excluirMeta}
-                disabled={excluindo}
-              >
+              <TouchableOpacity style={styles.excluir} onPress={excluirMeta} disabled={excluindo}>
                 <Text style={styles.excluirTexto}>{excluindo ? 'Excluindo...' : 'Excluir'}</Text>
               </TouchableOpacity>
             </View>

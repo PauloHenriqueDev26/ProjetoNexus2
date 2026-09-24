@@ -1,3 +1,4 @@
+/** Carrega categorias e contas e prepara o envio de lançamentos com ou sem arquivo. */
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
@@ -52,6 +53,7 @@ export function useTransactionOptions(tipo) {
     };
   }, [carregar]);
 
+  /** Salva a categoria na API e a seleciona para o lançamento atual. */
   async function criarCategoria(nome) {
     const response = await apiAutenticada('/financeiro/categorias', {
       method: 'POST',
@@ -65,6 +67,7 @@ export function useTransactionOptions(tipo) {
     setCategoriaId(response.categoria.id);
   }
 
+  /** Abre uma seleção por vez e valida o tamanho do arquivo antes de anexá-lo. */
   async function selecionarArquivo() {
     if (picking.current) return;
     picking.current = true;
@@ -88,6 +91,7 @@ export function useTransactionOptions(tipo) {
     }
   }
 
+  /** Monta JSON sem anexo ou FormData com o arquivo adequado à plataforma. */
   function prepararEnvio(values) {
     if (carregando || erroOpcoes || !categoriaId || !tipoContaId)
       throw new Error('Selecione a categoria e o tipo de conta antes de salvar.');

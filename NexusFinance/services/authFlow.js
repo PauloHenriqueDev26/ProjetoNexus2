@@ -1,3 +1,4 @@
+/** Guarda apenas em memória os dados intermediários de cadastro e recuperação de senha. */
 let cadastroPendente = null;
 let recuperacaoPendente = null;
 

@@ -1,21 +1,11 @@
+/** Verifica as regras de e-mail, nascimento e senha utilizadas pela autenticação. */
 import { describe, expect, it } from 'vitest';
-import {
-  isValidBirthDate,
-  isValidCpf,
-  isValidEmail,
-  normalizeDate,
-  passwordError,
-} from './validations';
+import { isValidBirthDate, isValidEmail, normalizeDate, passwordError } from './validations';
 
 describe('validações da autenticação', () => {
   it('valida e-mail', () => {
     expect(isValidEmail('aluno@email.com')).toBe(true);
     expect(isValidEmail('email-invalido')).toBe(false);
-  });
-
-  it('valida CPF pelos dígitos verificadores', () => {
-    expect(isValidCpf('529.982.247-25')).toBe(true);
-    expect(isValidCpf('111.111.111-11')).toBe(false);
   });
 
   it('aceita data brasileira e rejeita data impossível', () => {

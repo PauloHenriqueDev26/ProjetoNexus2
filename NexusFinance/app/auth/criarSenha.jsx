@@ -1,12 +1,13 @@
+/** Conclui o cadastro com a senha validada e limpa os dados temporários após o envio. */
 import { KeyboardArea, FormScrollView, FormInput } from '../../components/FormLayout';
 import { useState } from 'react';
 import { Text, TouchableOpacity } from 'react-native';
 import { router } from 'expo-router';
-import { AnimatedCard, AnimatedScreen } from '../components/AnimatedScreen';
+import { AnimatedCard, AnimatedScreen } from '../../components/AnimatedScreen';
 import { apiRequest } from '../../services/api';
 import { limparCadastroPendente, obterCadastroPendente } from '../../services/authFlow';
 import { erroSenha } from '../../services/validations';
-import { useAppStyles } from '../styles/styles';
+import { useAppStyles } from '../../styles/index';
 
 const CriarSenha = () => {
   const { colors, criarSenhaStyles: styles, keyboardStyles } = useAppStyles();

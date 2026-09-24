@@ -1,3 +1,4 @@
+/** Verifica os cálculos de rolagem e sobreposição em diferentes posições do teclado. */
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import { focusedScrollOffset, keyboardOverlap } from '../components/keyboardGeometry.mjs';

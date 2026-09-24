@@ -1,11 +1,12 @@
+/** Apresenta a proposta do Nexus Finance e as informações sobre seus recursos. */
 import React from 'react';
-import BarraNavegacao from '../components/BarraNavegacao';
-import { AnimatedCard, AnimatedScreen } from '../components/AnimatedScreen';
+import BarraNavegacao from '../../components/BarraNavegacao';
+import { AnimatedCard, AnimatedScreen } from '../../components/AnimatedScreen';
 import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialIcons';
 
-import { useAppStyles } from '../styles/styles';
+import { useAppStyles } from '../../styles/index';
 
 export default function SobreApp() {
   const { colors, sharedStyles, sobreAppStyles: styles } = useAppStyles();

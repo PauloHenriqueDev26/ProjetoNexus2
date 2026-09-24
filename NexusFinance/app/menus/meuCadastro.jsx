@@ -1,11 +1,12 @@
+/** Carrega os dados pessoais, salva as alterações e atualiza o perfil da sessão. */
 import DateInput from '../../components/DateInput';
-import { AnimatedScreen } from '../components/AnimatedScreen';
+import { AnimatedScreen } from '../../components/AnimatedScreen';
 import { KeyboardArea, FormScrollView, FormInput } from '../../components/FormLayout';
 import React, { useCallback, useState } from 'react';
 import { Alert, Text, TouchableOpacity, View } from 'react-native';
 import { router, useFocusEffect } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialIcons';
-import { useAppStyles } from '../styles/styles';
+import { useAppStyles } from '../../styles/index';
 import { apiAutenticada } from '../../services/financeiro';
 import { useSession } from '../../contexts/SessionContext';
 
@@ -37,6 +38,7 @@ export default function MeuCadastro() {
     }, []),
   );
 
+  /** Persiste os dados pessoais e reflete nome e e-mail na sessão atual. */
   async function salvarCadastro() {
     setSalvando(true);
     setErro('');

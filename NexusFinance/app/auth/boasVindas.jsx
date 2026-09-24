@@ -1,8 +1,9 @@
+/** Apresenta o aplicativo e os atalhos para entrar ou criar uma conta. */
 import React from 'react';
 import { Text, Image, TouchableOpacity, ScrollView } from 'react-native';
 import { router } from 'expo-router';
-import { AnimatedCard, AnimatedScreen } from '../components/AnimatedScreen';
-import { useAppStyles } from '../styles/styles';
+import { AnimatedCard, AnimatedScreen } from '../../components/AnimatedScreen';
+import { useAppStyles } from '../../styles/index';
 
 export default function BoasVindas() {
   const { boasVindasStyles: styles, keyboardStyles } = useAppStyles();

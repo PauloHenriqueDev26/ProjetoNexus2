@@ -1,3 +1,4 @@
+/** Centraliza títulos e retorno de navegação e informa a altura do cabeçalho aos formulários. */
 import React, { createContext } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { router } from 'expo-router';
@@ -14,9 +15,7 @@ const titles = {
   'auth/recuperarSenha': 'Recuperar senha',
   'auth/novaSenha': 'Nova senha',
   'receita/novaReceita': 'Nova receita',
-  'receita/editarReceita': 'Editar receita',
   'despesa/novaDespesa': 'Nova despesa',
-  'despesa/editarDespesa': 'Editar despesa',
   'menus/centralAjuda': 'Central de ajuda',
   'menus/meuCadastro': 'Meu cadastro',
   'menus/sobreApp': 'Sobre o app',
@@ -36,9 +35,10 @@ export default function ScreenHeader({ onLayout }) {
   const route = useRoute();
   const name = route.name.replace(/^\(tabs\)\//, '');
   const title = titles[name];
-  // Home and welcome already have their own introductory content.
+  // As telas inicial e de boas-vindas já possuem apresentação própria.
   if (!title) return null;
 
+  /** Retorna à tela anterior ou a um destino inicial quando não há histórico. */
   function goBack() {
     if (router.canGoBack()) router.back();
     else router.replace(name.startsWith('auth/') ? '/auth/boasVindas' : '/inicial');

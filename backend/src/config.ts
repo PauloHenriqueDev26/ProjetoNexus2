@@ -1,5 +1,7 @@
+/** Reúne as configurações de ambiente para servidor, banco, autenticação e e-mail. */
 import 'dotenv/config';
 
+/** Lê uma configuração obrigatória e aplica o valor padrão quando disponível. */
 function required(name: string, fallback?: string): string {
   const value = process.env[name] || fallback;
   if (!value) throw new Error(`Variável de ambiente ${name} não configurada.`);

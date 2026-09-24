@@ -1,3 +1,4 @@
+/** Aplica a máscara de data ao campo numérico sem depender de um seletor nativo. */
 import React from 'react';
 import { FormInput } from './FormLayout';
 import { dateInput } from '../services/dateInput.mjs';

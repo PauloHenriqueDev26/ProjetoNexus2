@@ -1,3 +1,4 @@
+/** Mantém os campos acessíveis quando o teclado abre, considerando cabeçalho e área segura. */
 import React, {
   createContext,
   useCallback,
@@ -26,6 +27,7 @@ import { useTheme, useThemedStyles } from '../contexts/ThemeContext';
 
 const FormContext = createContext(null);
 
+/** Compensa o teclado no iOS e considera os recuos necessários em telas e modais. */
 export function KeyboardArea({ children, modal = false, style }) {
   const headerHeight = useContext(ScreenHeaderHeightContext);
   const insets = useSafeAreaInsets();
@@ -44,8 +46,8 @@ export function KeyboardArea({ children, modal = false, style }) {
   );
 }
 
-// Measure the focused field again after the keyboard resizes the viewport.
-// This also covers switching fields while the keyboard is already visible.
+// Mede novamente o campo focado após o teclado alterar a área visível.
+// Também trata a troca de campo quando o teclado já está aberto.
 export function FormScrollView({
   children,
   contentContainerStyle,
@@ -104,7 +106,7 @@ export function FormScrollView({
       manualScroll.current = false;
       reveal();
       clearTimeout(settleTimer.current);
-      // Native window resizing and iOS accessory layout may finish after the event.
+      // O redimensionamento nativo e a barra do iOS podem terminar após o evento.
       settleTimer.current = setTimeout(reveal, (event.duration || 0) + 100);
     };
     const hide = () => {
@@ -200,6 +202,7 @@ export function FormScrollView({
   );
 }
 
+/** Integra o foco do campo à rolagem do formulário e aplica a aparência do tema. */
 export function FormInput({ onFocus, style, ...props }) {
   const { colors, isDark } = useTheme();
   const styles = useThemedStyles(createStyles);

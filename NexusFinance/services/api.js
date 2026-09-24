@@ -1,6 +1,8 @@
+/** Resolve o endereço da API por ambiente e padroniza requisições e mensagens de erro. */
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
+/** Prioriza a URL configurada e usa o endereço adequado ao navegador, Expo ou emulador. */
 function getApiUrl() {
   if (process.env.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL.replace(/\/$/, '');
@@ -16,6 +18,7 @@ function getApiUrl() {
 
 export const API_URL = getApiUrl();
 
+/** Envia JSON ou formulário multipart e transforma respostas de erro em exceções para a interface. */
 export async function apiRequest(path, options = {}) {
   let response;
   const multipart = typeof FormData !== 'undefined' && options.body instanceof FormData;
@@ -24,6 +27,7 @@ export async function apiRequest(path, options = {}) {
     response = await fetch(`${API_URL}${path}`, {
       ...options,
       headers: {
+        // O fetch define o boundary do multipart; cabeçalho manual quebraria o envio do anexo.
         ...(multipart ? {} : { 'Content-Type': 'application/json' }),
         ...options.headers,
       },

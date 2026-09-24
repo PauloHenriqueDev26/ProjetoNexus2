@@ -1,6 +1,7 @@
+/** Verifica a máscara de data para digitação, colagem e valores recebidos da API. */
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { dateInput } from './dateInput.mjs';
+import { dateInput } from '../services/dateInput.mjs';
 
 test('formats typed digits, pasted dates and API dates', () => {
   for (const input of ['31122000', '31/12/2000', '2000-12-31'])

@@ -1,0 +1,15 @@
+{
+  "name": "projeto-nexus",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "format": "prettier --write \"{NexusFinance,backend}/**/*.{js,jsx,mjs,cjs,ts,json}\" \"*.json\"",
+    "format:check": "prettier --check \"{NexusFinance,backend}/**/*.{js,jsx,mjs,cjs,ts,json}\" \"*.json\"",
+    "lint": "npm --prefix NexusFinance run lint -- --max-warnings 0",
+    "test": "npm --prefix backend test && npm --prefix NexusFinance test",
+    "build": "npm --prefix backend run build && npm --prefix NexusFinance run build"
+  },
+  "devDependencies": {
+    "prettier": "3.9.9"
+  }
+}

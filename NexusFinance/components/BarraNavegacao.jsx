@@ -1,4 +1,5 @@
-import { ScreenHeaderHeightContext } from '../../components/ScreenHeader';
+/** Controla a navegação inferior, os menus expansíveis e a visibilidade durante a digitação. */
+import { ScreenHeaderHeightContext } from './ScreenHeader';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import React, { useState } from 'react';
 import {
@@ -21,7 +22,7 @@ import Animated, {
   FadeOut,
 } from 'react-native-reanimated';
 
-import { useAppStyles } from '../styles/styles';
+import { useAppStyles } from '../styles/index';
 
 const TABS = [
   { key: 'inicial', route: '/inicial', label: 'Início', icon: 'home' },
@@ -45,6 +46,7 @@ const MORE_ACTIONS = [
   { label: 'Config.', icon: 'settings', route: '/configuracoes' },
 ];
 
+/** Anima o toque e destaca a aba ativa ou o menu aberto. */
 function AnimatedTabButton({ tab, isActive, isOpen, onPress }) {
   const { barraNavegacaoStyles: styles, colors } = useAppStyles();
   const scale = useSharedValue(1);
@@ -118,6 +120,7 @@ function AnimatedTabButton({ tab, isActive, isOpen, onPress }) {
   );
 }
 
+/** Limita o menu à altura disponível e permite rolagem em telas pequenas. */
 function MenuExpandido({ items, onSelect }) {
   const { barraNavegacaoStyles: styles, colors } = useAppStyles();
   const { height } = useWindowDimensions();

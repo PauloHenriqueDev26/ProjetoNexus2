@@ -1,10 +1,11 @@
+/** Apresenta os dados da sessão, o resumo financeiro e a confirmação de saída. */
 import React, { useState } from 'react';
-import BarraNavegacao from '../components/BarraNavegacao';
-import { AnimatedCard, AnimatedScreen } from '../components/AnimatedScreen';
+import BarraNavegacao from '../../components/BarraNavegacao';
+import { AnimatedCard, AnimatedScreen } from '../../components/AnimatedScreen';
 import { View, Text, TouchableOpacity, ScrollView, Modal } from 'react-native';
 import { router } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialIcons';
-import { useAppStyles } from '../styles/styles';
+import { useAppStyles } from '../../styles/index';
 import { formatBRL, apiAutenticada } from '../../services/financeiro';
 import { useSession } from '../../contexts/SessionContext';
 import { useResumoFinanceiro } from '../../hooks/useResumoFinanceiro';
@@ -16,6 +17,7 @@ export default function Perfil() {
   const { dados } = useResumoFinanceiro();
   const totals = dados.atual;
 
+  /** Encerra a sessão local mesmo se a comunicação de saída com a API falhar. */
   async function sair() {
     try {
       await apiAutenticada('/auth/logout', { method: 'POST' });

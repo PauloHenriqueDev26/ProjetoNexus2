@@ -1,4 +1,5 @@
-// Semantic colors shared by screens, forms, charts and navigation.
+/** Define as cores semânticas compartilhadas por telas, formulários, gráficos e navegação. */
+// Cores semânticas compartilhadas por telas, formulários, gráficos e navegação.
 const brand = {
   primary: '#5145FF',
   primaryDark: '#1809e0',
@@ -75,6 +76,7 @@ export const palettes = {
   },
 };
 
+/** Restringe a preferência aos dois temas suportados pelo aplicativo. */
 export function isTheme(value) {
   return value === 'claro' || value === 'escuro';
 }

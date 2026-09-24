@@ -1,3 +1,4 @@
+/** Registra despesas com categoria, conta, recorrência e anexo opcional. */
 import DateInput from '../../components/DateInput';
 import { TransactionSelectors, TransactionAttachment } from '../../components/TransactionOptions';
 import { useTransactionOptions } from '../../hooks/useTransactionOptions';
@@ -10,8 +11,8 @@ import React, { useState, useRef } from 'react';
 import { Alert, Switch, Text, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialIcons';
-import { AnimatedScreen } from '../components/AnimatedScreen';
-import { useAppStyles } from '../styles/styles';
+import { AnimatedScreen } from '../../components/AnimatedScreen';
+import { useAppStyles } from '../../styles/index';
 import { apiAutenticada, today } from '../../services/financeiro';
 
 export default function NovaDespesa() {
@@ -27,6 +28,7 @@ export default function NovaDespesa() {
   const [erro, setErro] = useState('');
   const [salvando, setSalvando] = useState(false);
 
+  /** Bloqueia toques repetidos até a conclusão do cadastro do lançamento. */
   async function salvar() {
     if (submitLock.current) return;
     submitLock.current = true;

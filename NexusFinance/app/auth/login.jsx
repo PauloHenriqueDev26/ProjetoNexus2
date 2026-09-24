@@ -1,11 +1,12 @@
+/** Autentica o usuário e entrega o token e os dados pessoais ao provedor de sessão. */
 import { KeyboardArea, FormScrollView, FormInput } from '../../components/FormLayout';
 import React, { useState } from 'react';
 import { router } from 'expo-router';
 import { Image, View, Text, TouchableOpacity } from 'react-native';
-import { AnimatedScreen } from '../components/AnimatedScreen';
+import { AnimatedScreen } from '../../components/AnimatedScreen';
 import { apiRequest } from '../../services/api';
 import { useSession } from '../../contexts/SessionContext';
-import { useAppStyles } from '../styles/styles';
+import { useAppStyles } from '../../styles/index';
 
 export default function Login() {
   const { colors, keyboardStyles, loginStyles: styles, sharedStyles } = useAppStyles();
