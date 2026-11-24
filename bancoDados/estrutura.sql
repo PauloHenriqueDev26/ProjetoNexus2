@@ -29,6 +29,7 @@ CREATE TABLE usuarios (
     data_nascimento DATE NULL,
 
     foto_perfil VARCHAR(255) NULL,
+    foto_perfil_binaria MEDIUMBLOB NULL,
 
     ativo BOOLEAN NOT NULL DEFAULT TRUE,
 
@@ -39,8 +40,7 @@ CREATE TABLE usuarios (
         ON UPDATE CURRENT_TIMESTAMP,
 
     CONSTRAINT uq_usuarios_email
-        UNIQUE (email),
-
+        UNIQUE (email)
 ) ENGINE=InnoDB;
 
 
@@ -580,43 +580,6 @@ CREATE TABLE notificacoes (
         FOREIGN KEY (id_tipo_notificacao)
         REFERENCES tipos_notificacao(id_tipo_notificacao)
         ON DELETE RESTRICT
-        ON UPDATE CASCADE
-) ENGINE=InnoDB;
-
-
--- =====================================================
--- 17. RELATÓRIOS GERADOS
--- =====================================================
-
-CREATE TABLE relatorios_gerados (
-    id_relatorio BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-
-    id_usuario INT UNSIGNED NOT NULL,
-
-    tipo VARCHAR(100) NOT NULL,
-
-    data_inicio DATE NOT NULL,
-
-    data_fim DATE NOT NULL,
-
-    formato ENUM(
-        'pdf',
-        'csv',
-        'xlsx'
-    ) NOT NULL,
-
-    caminho_arquivo VARCHAR(500) NULL,
-
-    criado_em DATETIME NOT NULL
-        DEFAULT CURRENT_TIMESTAMP,
-
-    CONSTRAINT chk_relatorios_periodo
-        CHECK (data_fim >= data_inicio),
-
-    CONSTRAINT fk_relatorios_usuario
-        FOREIGN KEY (id_usuario)
-        REFERENCES usuarios(id_usuario)
-        ON DELETE CASCADE
         ON UPDATE CASCADE
 ) ENGINE=InnoDB;
 

@@ -1,7 +1,7 @@
 # Estrutura do Projeto Nexus Finance
 
 ```text
-ProjetoNexus2/
+NexusTESTE/
 ├── NexusFinance/
 │   ├── src/
 │   │   ├── app/              # Telas e layouts do Expo Router
@@ -31,18 +31,16 @@ ProjetoNexus2/
 │   │   └── servidor.ts       # Inicialização da API
 │   └── README.md
 ├── bancoDados/
-│   └── estrutura.sql         # Criação inicial do banco
-├── docs/
-│   ├── ALTERACOES_PORTUGUES.md
-│   ├── DOCUMENTACAO_FUNCIONALIDADES.md
-│   ├── ESTRUTURA_PROJETO.md
-│   └── RESPONSIVIDADE.md
-└── README.md
+│   ├── estrutura.sql         # Criação inicial do banco
+│   └── seed_teste_completo_usuario_1.sql
+└── docs/
+    ├── DOCUMENTACAO_FUNCIONALIDADES.md
+    └── ESTRUTURA_PROJETO.md
 ```
 
 ## Convenções
 
-Mantenha apenas telas e layouts em `NexusFinance/src/app/`: todo arquivo nessa pasta participa da navegação. Componentes e estilos ficam em suas pastas próprias. Os nomes das rotas existentes continuam os mesmos.
+Mantenha apenas telas e layouts em `NexusFinance/src/app/`: todo arquivo nessa pasta participa da navegação. Componentes e estilos ficam em suas pastas próprias.
 
 O backend compila o código de `src/` para `dist/`.
 
