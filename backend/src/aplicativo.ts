@@ -4,13 +4,13 @@ import { rotasAutenticacao } from "./rotas/autenticacao.rotas";
 import { rotasDados } from "./rotas/dados.rotas";
 import multer from 'multer';
 import { ErroApi } from "./middlewares/erros";
-import { configuracao } from './config/configuracao';
+import { origemWebAutorizada } from './config/configuracao';
 const aplicativo = express();
 export { aplicativo };
 aplicativo.disable('x-powered-by');
 aplicativo.use(cors({
   origin(origem, callback) {
-    if (!origem || configuracao.cors.includes(origem)) return callback(null, true);
+    if (!origem || origemWebAutorizada(origem)) return callback(null, true);
     callback(new ErroApi(403, 'Origem não autorizada.'));
   },
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],

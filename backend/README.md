@@ -10,6 +10,8 @@ API Express em TypeScript para autenticação, perfil, finanças, metas, notific
 
 A API ficará disponível em `http://localhost:3000`.
 
+Em desenvolvimento, a API aceita origens web locais em `localhost`, `127.0.0.1` e `[::1]` em qualquer porta, inclusive quando o Expo muda de porta. Em produção, as origens web precisam estar em `APP_ORIGINS`.
+
 O backend precisa continuar aberto em um terminal enquanto o aplicativo Expo estiver sendo usado em outro terminal. Para celular físico, copie `../NexusFinance/.env.example` para `../NexusFinance/.env` e troque o IP de exemplo pelo IPv4 do computador.
 
 ## Rotas

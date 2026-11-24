@@ -19,6 +19,20 @@ function obrigatoria(nome: string, alternativa?: string): string {
   return valor;
 }
 
+export function origemWebAutorizada(origem: string): boolean {
+  if (origensAplicativo.includes(origem)) return true;
+  if (process.env.NODE_ENV === 'production') return false;
+
+  try {
+    const url = new URL(origem);
+    return url.origin === origem &&
+      (url.protocol === 'http:' || url.protocol === 'https:') &&
+      ['localhost', '127.0.0.1', '[::1]'].includes(url.hostname);
+  } catch {
+    return false;
+  }
+}
+
 export const configuracao = {
   porta: Number(process.env.PORT || 3000),
   banco: {
@@ -36,7 +50,6 @@ export const configuracao = {
   recuperacao: {
     segredo: obrigatoria('RECOVERY_TOKEN_SECRET', segredoConfigurado)
   },
-  cors: origensAplicativo,
   email: {
     host: process.env.EMAIL_HOST || 'smtp.gmail.com',
     port: Number(process.env.EMAIL_PORT || 587),
