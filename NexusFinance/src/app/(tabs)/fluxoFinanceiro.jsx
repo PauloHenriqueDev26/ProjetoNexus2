@@ -522,4 +522,9 @@ export default function FluxoFinanceiro() {
     </Modal>
     <BarraNavegacao />
   </TelaAnimada>;
+
+  // LIMITE define dez transações por página; SEM_PERIODO representa ausência de datas.
+  // Estados de filtro guardam valores aplicados; estados Rascunho guardam alterações antes de aplicar.
+  // estaEmFoco impede carregamento da lista quando a tela não está visível.
+  // travaConfirmacao impede confirmar duas vezes enquanto a primeira chamada ainda aguarda.
 }

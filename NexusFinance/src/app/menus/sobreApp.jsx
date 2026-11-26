@@ -5,6 +5,10 @@ import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import { router } from 'expo-router';
 import Icon from '@expo/vector-icons/MaterialIcons';
 import { useEstilosApp } from "../../style/style";
+// Tela institucional com informações sobre o Nexus Finance.
+// Apresenta versão, finalidade e avisos legais relevantes ao usuário.
+// Esta tela usa apenas dados estáticos e navegação para ajuda; não altera dados da conta.
+// Destaques explicam organização, metas, painel e fluxo; cartões finais descrevem registros e conta.
 export default function SobreApp() {
   const {
     cores,

@@ -2,9 +2,13 @@ import React from 'react';
 import { Platform, View } from 'react-native';
 import Svg, { Circle } from 'react-native-svg';
 import { AnimatedCircularProgress } from 'react-native-circular-progress';
+/**
+ * Componente visual que representa uma porcentagem em formato circular.
+ * Calcula o ângulo preenchido e apresenta valor/descrição central sem executar nenhuma lógica de dados.
+ */
 export default function AnelProgresso(propriedades) {
   if (Platform.OS !== 'web') return <AnimatedCircularProgress {...propriedades} />;
-  // O atributo de origem da transformação SVG da biblioteca é inválido no React DOM.
+  // Na web, extraímos as propriedades e recriamos o progresso com SVG.
   const {
     size: tamanho,
     width: largura,
@@ -14,7 +18,10 @@ export default function AnelProgresso(propriedades) {
     children: filhos
   } = propriedades;
   const progresso = Math.max(0, Math.min(100, Number(preenchimento) || 0));
+  // Raio considera a espessura da linha para que o círculo permaneça dentro da área definida.
   const raio = (tamanho - largura) / 2;
+  // SVG mede o traço pela circunferência: offset zero mostra o arco inteiro;
+  // offset igual ao comprimento o esconde. A proporção restante corresponde ao percentual.
   const comprimento = 2 * Math.PI * raio;
   return <View style={{
     width: tamanho,

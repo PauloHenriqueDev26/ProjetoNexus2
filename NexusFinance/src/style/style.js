@@ -2066,3 +2066,6 @@ export function useEstilosApp() {
   if (!cache.has(cores)) cache.set(cores, criarEstilosApp(cores));
   return cache.get(cores);
 }
+
+// Construção central dos estilos React Native compartilhados.
+// Converte as cores atuais em estilos de tela, navegação e campos usados por vários componentes.

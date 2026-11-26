@@ -1,6 +1,13 @@
+// Validações específicas do formulário frontend.
+// Impede que campos incompletos sejam enviados e fornece mensagens consistentes com o backend.
+
 export function validarEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 }
+
+// validarEmail usa expressão simples compatível com os formulários da interface.
+// validarDataNascimento aceita brasileira ou ISO e impede datas futuras/impossíveis.
+// erroSenha retorna a primeira regra não atendida ou vazio quando válida.
 
 export function validarDataNascimento(valor) {
   const brasileira = valor.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);

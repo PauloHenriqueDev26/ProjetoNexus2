@@ -1,3 +1,6 @@
+// Máscaras e formatadores de valores digitados pelo usuário.
+// Remove caracteres inválidos e aplica padrões de moeda, telefone, CPF e data sem alterar dados originais.
+
 function mascararDigitos(valor, comprimentoMaximo) {
   const digitos = String(valor ?? '').replace(/\D/g, '');
   return typeof comprimentoMaximo === 'number' ? digitos.slice(0, comprimentoMaximo) : digitos;

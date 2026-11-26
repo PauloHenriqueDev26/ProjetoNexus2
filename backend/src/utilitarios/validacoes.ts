@@ -1,3 +1,7 @@
+// Utilitários compartilhados de validação e normalização.
+// Normalizam email/data, validam CPF opcionalmente usado pela aplicação e aplicam requisitos de senha.
+// A função de data usa UTC para evitar deslocamentos causados pelo fuso horário do servidor.
+
 export function normalizarEmail(email: unknown): string {
   return typeof email === 'string' ? email.trim().toLowerCase() : '';
 }
@@ -28,8 +32,8 @@ export function normalizarData(valor: unknown): string {
 }
 export function dataNascimentoValida(valor: string): boolean {
   if (!/^\d{4}-\d{2}-\d{2}$/.test(valor)) return false;
-  // Parse dates as calendar values in UTC so the host server timezone cannot
-  // shift a birthday to the previous or next day.
+  // Interpreta datas de calendário em UTC para que o fuso do servidor não
+  // desloque o aniversário para o dia anterior ou seguinte.
   const data = new Date(`${valor}T00:00:00.000Z`);
   if (Number.isNaN(data.getTime()) || data.toISOString().slice(0, 10) !== valor) return false;
   const agora = new Date();

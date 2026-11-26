@@ -2,6 +2,10 @@ import multer from 'multer';
 import { NextFunction, Request, Response } from 'express';
 import { ErroApi } from '../middlewares/erros';
 
+// Serviço de upload da foto de perfil.
+// Aceita no máximo um arquivo JPEG ou PNG de até 2 MB e guarda os bytes no banco.
+// A conversão para data URI permite que o cliente exibido use a foto diretamente no aplicativo.
+
 const limite = 2 * 1024 * 1024;
 const receber = multer({
   storage: multer.memoryStorage(),

@@ -1,6 +1,9 @@
 import * as SecureStore from 'expo-secure-store';
 import { Platform } from 'react-native';
 const CHAVE_TOKEN = 'nexus_token';
+// Persistência do token JWT no dispositivo.
+// Usa SecureStore em aplicativos nativos e localStorage na versão web.
+// Centralizar essas operações mantém o contexto de sessão independente da plataforma.
 export async function salvarToken(token) {
   if (Platform.OS === 'web') {
     localStorage.setItem(CHAVE_TOKEN, token);

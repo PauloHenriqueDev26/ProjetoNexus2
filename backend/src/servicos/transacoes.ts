@@ -3,6 +3,10 @@ import { bancoDados } from "../bancoDados/bancoDados";
 import { ErroApi } from "../middlewares/erros";
 import { normalizarData } from "../utilitarios/validacoes";
 import { nomeAnexo, removerAnexo, armazenarAnexo, validarAnexo } from "./anexos";
+// Serviço central de transações financeiras.
+// Converte valores brasileiros, valida datas e IDs, cria categorias/contas quando necessário,
+// divide parcelamentos, envia receitas a metas e registra anexos e notificações em uma transação única.
+// Todas as alterações relacionadas são revertidas caso qualquer etapa falhe.
 export function identificadorPositivo(valor: unknown): number | null {
   if (typeof valor !== 'string' && typeof valor !== 'number' || !/^\d+$/.test(String(valor))) return null;
   const id = Number(valor);
@@ -136,6 +140,9 @@ export async function criarTransacao(idUsuario: number, corpo: Record<string, un
         id: criado.insertId
       } as RowDataPacket;
     }
+    // Divisão exata em centavos: a parte inteira é distribuída por todas as parcelas;
+    // o resto (centavos que não dividem igualmente) vai às primeiras parcelas.
+    // Com isso, a soma das parcelas sempre é idêntica ao valor informado.
     const valorTotalCentavos = Math.round(valor * 100);
     const primeiroId = (await conexao.execute<ResultSetHeader>(`INSERT INTO transacoes (id_usuario, id_conta, id_categoria, id_tipo_transacao, id_status_transacao, descricao, valor, data_transacao, observacao, parcela_atual, total_parcelas)
        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`, [idUsuario, conta.id, categoria.id, tipo.id, status.id, descricao, quantidadeParcelas > 1 ? (Math.floor(valorTotalCentavos / quantidadeParcelas) + (valorTotalCentavos % quantidadeParcelas > 0 ? 1 : 0)) / 100 : valor, data, observacoes, quantidadeParcelas > 1 ? 1 : null, quantidadeParcelas > 1 ? quantidadeParcelas : null]))[0];
@@ -144,6 +151,8 @@ export async function criarTransacao(idUsuario: number, corpo: Record<string, un
       const [[pendente]] = await conexao.query<RowDataPacket[]>("SELECT id_status_transacao AS id FROM status_transacao WHERE nome = 'Pendente' LIMIT 1");
       statusParcela = pendente.id;
     }
+    // A primeira parcela já foi inserida acima. As demais recebem datas mensais,
+    // status pendente e o mesmo número total, para a interface exibir “n de N”.
     for (let parcela = 2; parcela <= quantidadeParcelas; parcela++) {
       const centavosParcela = Math.floor(valorTotalCentavos / quantidadeParcelas) + (parcela <= valorTotalCentavos % quantidadeParcelas ? 1 : 0);
       await conexao.execute(`INSERT INTO transacoes (id_usuario, id_conta, id_categoria, id_tipo_transacao, id_status_transacao, descricao, valor, data_transacao, observacao, parcela_atual, total_parcelas)

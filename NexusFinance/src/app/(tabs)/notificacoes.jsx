@@ -6,6 +6,8 @@ import BarraNavegacao from "../../componentes/BarraNavegacao";
 import { CartaoAnimado, TelaAnimada } from "../../componentes/TelaAnimada";
 import { useEstilosApp } from "../../style/style";
 import { apiAutenticada } from "../../servicos/financeiro";
+// Exibe mensagens financeiras e administrativas enviadas ao usuário.
+// Permite identificar itens não lidos e acompanhar preferência de notificações.
 export default function Notificacoes() {
   const {
     cores,
@@ -88,3 +90,6 @@ export default function Notificacoes() {
       <BarraNavegacao />
     </TelaAnimada>;
 }
+// VISUALIZACAO associa tipos Financeira, Meta, Sistema e Lembrete a ícones/cores.
+// useFocusEffect recarrega notificações ao entrar na tela e cancela atualização após sair.
+// marcarComoLida evita chamadas para itens já lidos e altera o estado somente após sucesso.

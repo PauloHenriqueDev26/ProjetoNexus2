@@ -3,6 +3,11 @@ import { ActivityIndicator, Keyboard, Modal, Pressable, ScrollView, StyleSheet, 
 import Icon from '@expo/vector-icons/MaterialIcons';
 import { useTema, useEstilosTema } from "../contextos/ContextoTema";
 import { CampoFormulario, RolagemFormulario, AreaTeclado } from "./LayoutFormulario";
+// SeletorOpcao mostra uma opção atual e abre Modal com lista de rádio.
+// SeletoresTransacao agrega conta, categoria e criação de nova categoria.
+// AnexoTransacao informa nome/tamanho e permite trocar ou remover o arquivo selecionado.
+// Exibe opções de categoria, conta e ações relacionadas a uma transação.
+// Pode ser usado em menus ou formulários para padronizar seleção e callbacks.
 function SeletorOpcao({
   rotulo,
   itens,

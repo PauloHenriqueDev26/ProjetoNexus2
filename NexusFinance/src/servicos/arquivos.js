@@ -1,6 +1,8 @@
 import { Platform } from 'react-native';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
+// Funções auxiliares para seleção e download de arquivos no aplicativo.
+// Encapsula diferenças de plataforma e validações básicas antes de enviar à API.
 function baixarNoNavegador(blob, nome) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement('a');
@@ -14,7 +16,7 @@ function baixarNoNavegador(blob, nome) {
 export async function exportarCSV(transacoes) {
   const cell = valor => {
     const texto = String(valor ?? '');
-    // Prevent spreadsheet applications from interpreting user text as formulas.
+    // Evita que programas de planilha interpretem texto do usuário como fórmula.
     return `"${(/^[\s]*[=+@-]/.test(texto) ? "'" + texto : texto).replace(/"/g, '""')}"`;
   };
   const linhas = [['Data', 'Descrição', 'Tipo', 'Categoria', 'Tipo de conta', 'Valor', 'Status', 'Observação'], ...transacoes.map(t => [t.data, t.descricao, t.tipo, t.categoria, t.tipoConta, Number(t.valor).toFixed(2).replace('.', ','), t.status, t.observacao])];
@@ -41,3 +43,6 @@ export async function exportarCSV(transacoes) {
     });
   }
 }
+// baixarNoNavegador cria um Blob temporário e dispara download anônimo no navegador.
+// cell escapa aspas e prefixa textos que iniciam operador para impedir fórmula em planilhas.
+// Nativo usa cache temporário, compartilha o arquivo e o remove no finally.

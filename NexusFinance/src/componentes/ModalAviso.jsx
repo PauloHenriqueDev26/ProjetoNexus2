@@ -3,6 +3,8 @@ import { Animated, Keyboard, Modal, Pressable, ScrollView, StyleSheet, Text, Vie
 import Icon from '@expo/vector-icons/MaterialIcons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTema } from "../contextos/ContextoTema";
+// Modal reutilizável para confirmações e avisos.
+// Bloqueia o fundo, apresenta título/mensagem e delega confirmar/cancelar aos callbacks.
 export default function ModalAviso({
   visivel,
   titulo,
@@ -24,6 +26,7 @@ export default function ModalAviso({
   const icone = tipo === 'erro' ? 'error-outline' : tipo === 'informacao' ? 'info-outline' : 'check';
   useEffect(() => {
     if (!visivel) return;
+    // fecha o teclado sempre que o modal abre
     Keyboard.dismiss();
     animacao.setValue(0);
     const movimento = Animated.spring(animacao, {

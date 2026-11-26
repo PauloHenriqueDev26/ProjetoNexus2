@@ -76,3 +76,9 @@ const criarEstilos = cores => StyleSheet.create({
     fontWeight: '600'
   }
 });
+// Cabeçalho reutilizável das telas.
+// Exibe título, subtítulo opcional e controles à direita usando os estilos fornecidos pelo tema.
+// Contexto permite que telas que medem o cabeçalho compartilhem sua altura com a barra inferior.
+// titulos associa o nome interno da rota ao texto exibido ao usuário.
+// route.name identifica a rota atual; regex remove o prefixo interno (tabs).
+// Se não houver título configurado, esta tela não mostra cabeçalho próprio.

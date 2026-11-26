@@ -1,5 +1,8 @@
 import { RowDataPacket } from 'mysql2';
 import { bancoDados } from "./bancoDados";
+// Script de migração incremental: adiciona apenas estruturas que ainda não existem.
+// Isso permite atualizar bancos antigos sem apagar dados ou repetir comandos já executados.
+// SHOW COLUMNS/SHOW TABLES verificam cada estrutura antes de criar ou alterar.
 async function migrar() {
   const [fotoPerfil] = await bancoDados.query<RowDataPacket[]>("SHOW COLUMNS FROM usuarios LIKE 'foto_perfil_binaria'");
   if (!fotoPerfil.length) await bancoDados.query('ALTER TABLE usuarios ADD COLUMN foto_perfil_binaria MEDIUMBLOB NULL');

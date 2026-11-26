@@ -386,3 +386,7 @@ rotasDados.post('/privacidade/solicitacoes', async (requisicao: RequisicaoAutent
     proximo(falha);
   }
 });
+
+// Rotas protegidas para configurações, resumo financeiro, transações e metas.
+// Como rotasDados aplica autenticação no nível do roteador, todo endpoint deste módulo exige usuário válido.
+// Operações que alteram várias tabelas usam transações do MySQL para evitar estados parcialmente atualizados.

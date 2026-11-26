@@ -233,3 +233,7 @@ export default function NovaReceita() {
     }} />
     </>;
 }
+// opcoes fornece categorias, contas, arquivo e prepararEnvio para montar JSON/FormData.
+// travaEnvio impede submissão simultânea; recebido/parcelado/recorrente controlam regras incompatíveis.
+// enviarParaMeta só é permitido em receita confirmada e não parcelada.
+// salvar envia status Confirmada/Pendente e exibe modal antes de navegar ao fluxo.

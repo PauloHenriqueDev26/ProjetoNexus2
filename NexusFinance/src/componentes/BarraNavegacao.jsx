@@ -7,6 +7,9 @@ import Icon from '@expo/vector-icons/MaterialIcons';
 import * as Haptics from 'expo-haptics';
 import Animated, { useSharedValue, useAnimatedStyle, withTiming, FadeIn, FadeOut } from 'react-native-reanimated';
 import { useEstilosApp } from "../style/style";
+// Imports: contexto mede o cabeçalho; insets calcula áreas seguras; router identifica/navega rotas.
+// Reanimated fornece escala e entrada/saída dos menus.
+// EstilosApp provê os estilos da barra de navegação.
 const ABAS = [{
   key: 'inicial',
   route: '/inicial',
@@ -160,6 +163,8 @@ function MenuExpandido({
       </ScrollView>
     </Animated.View>;
 }
+// Barra inferior usada pelas telas principais.
+// Destaca a rota ativa e permite navegar entre as abas sem perder o estado global da sessão.
 export default function BarraNavegacao() {
   const {
     estilosBarraNavegacao: estilos

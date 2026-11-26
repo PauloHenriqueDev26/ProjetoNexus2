@@ -3,11 +3,16 @@ import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
 import * as FileSystem from 'expo-file-system/legacy';
 import { formatarReais } from './financeiro';
+// Os dados financeiros podem conter texto digitado pela pessoa usuária. Codificamos
+// caracteres que têm significado no HTML antes de montar as células da tabela.
 function escaparHtml(valor) {
   return String(valor ?? '').replace(/[&<>"']/g, caractere => ({
     '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
   })[caractere]);
 }
+
+// Serviço de geração e exportação de relatórios financeiros.
+// Monta dados da API em documentos PDF/HTML conforme o cartão solicitado pelo usuário.
 
 export async function exportarDashboard(tipo, dados) {
   const atual = dados.atual || {};
@@ -95,6 +100,11 @@ export async function exportarDashboard(tipo, dados) {
     await FileSystem.deleteAsync(uri, { idempotent: true });
   }
 }
+
+// escaparHtml impede conteúdo do usuário quebrar/introduzir HTML no relatório.
+// tabela cria cabeçalhos e linhas de forma controlada.
+// blocos selecionam indicadores, evolução, categorias e metas conforme tipo solicitado.
+// Na web usa janela de impressão; no nativo gera arquivo PDF temporário e compartilha.
 
 
 

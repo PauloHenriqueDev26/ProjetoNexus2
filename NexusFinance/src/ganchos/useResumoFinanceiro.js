@@ -13,6 +13,8 @@ const VAZIO = {
     despesasRealizadas: 0,
     receitasPrevistas: 0,
     despesasPrevistas: 0,
+    saldoRealizado: 0,
+    saldoPrevistoRestante: 0,
     saldo: 0
   },
   atual: {
@@ -39,6 +41,8 @@ const VAZIO = {
   historico: [],
   meta: null
 };
+// Hook que carrega o resumo financeiro da API.
+// Controla estado de carregamento/erro, permite atualização manual e expõe dados padronizados às telas.
 export function useResumoFinanceiro() {
   const estaEmFoco = useIsFocused();
   const [revisao, setRevisao] = useState(0);

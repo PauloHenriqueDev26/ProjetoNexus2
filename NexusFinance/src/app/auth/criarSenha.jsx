@@ -102,4 +102,11 @@ const CriarSenha = () => {
       <ModalAviso visivel={sucesso} titulo="Conta criada!" mensagem="Seu cadastro foi realizado com sucesso." textoBotao="Ir para o login" aoFechar={irParaLogin} />
     </>;
 };
+/*
+  Finalização do cadastro com senha e confirmação.
+  Verifica requisitos de segurança e envia o usuário cadastrado ao backend.
+*/
 export default CriarSenha;
+
+// dadosCadastro vem da etapa anterior em memória; erroSenha verifica tamanho, maiúscula, minúscula e número.
+// continuar só cria a conta após senha/confirmação coincidirem; sucesso abre modal sem autenticar automaticamente.

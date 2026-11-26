@@ -1,3 +1,6 @@
+// Paletas centralizadas dos temas claro e escuro.
+// Cada chave representa uma finalidade visual, evitando valores de cor espalhados pela interface.
+
 // Cores compartilhadas pelas telas, formulários, gráficos e navegação.
 const marca = {
   primaria: '#5145FF',

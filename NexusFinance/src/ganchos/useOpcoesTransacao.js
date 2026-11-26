@@ -2,7 +2,14 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { Platform } from 'react-native';
 import * as DocumentPicker from 'expo-document-picker';
 import { apiAutenticada } from "../servicos/financeiro";
+
+// Hook que obtém categorias e tipos de conta para receitas ou despesas.
+// Mantém estado de carregamento e evita chaves/valores inválidos em formulários.
 export function useOpcoesTransacao(tipo) {
+  // estados: categorias/tipos disponíveis, IDs selecionados, arquivo anexado e erros.
+  // montado evita atualização após desmontar; selecionando evita abrir o picker duas vezes.
+  // carregar preserva uma seleção válida e escolhe preferência padrão ao trocar o tipo.
+  // prepararEnvio usa JSON sem arquivo e FormData com arquivo nativo ou web.
   const [categorias, setCategorias] = useState([]);
   const [tiposConta, setTiposConta] = useState([]);
   const [categoriaId, setCategoriaId] = useState('');

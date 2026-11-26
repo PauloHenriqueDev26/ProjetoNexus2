@@ -8,6 +8,9 @@ import { enviarCodigoRecuperacao } from '../servicos/email';
 import { dataNascimentoValida, emailValido, normalizarData, normalizarEmail, erroSenha } from "../utilitarios/validacoes";
 import { fotoComoUri } from '../servicos/fotoPerfil';
 import { configuracao } from '../config/configuracao';
+// Rotas públicas responsáveis por cadastro, login, sessão e recuperação de senha.
+// Também contém tipos locais das linhas MySQL e funções auxiliares de segurança.
+// Os endpoints validam dados, geram hashes seguros e usam transações em operações sensíveis.
 interface UserRow extends RowDataPacket {
   id_usuario: number;
   nome: string;
@@ -191,8 +194,8 @@ rotasAutenticacao.post('/nova-senha', async (requisicao, resposta, proximo) => {
     const conexao = await bancoDados.getConnection();
     try {
       await conexao.beginTransaction();
-      // Lock the active code while consuming it. Concurrent password-reset
-      // requests using the same code must not both succeed.
+      // Bloqueia o código ativo durante o consumo. Pedidos concorrentes de redefinição
+      // com o mesmo código não podem ser aceitos simultaneamente.
       const [linhas] = await conexao.query<RecoveryRow[]>(`SELECT r.id_recuperacao, r.id_usuario, r.token_hash, r.expira_em, r.utilizado
          FROM recuperacoes_senha r
          INNER JOIN usuarios u ON u.id_usuario = r.id_usuario
@@ -206,7 +209,7 @@ rotasAutenticacao.post('/nova-senha', async (requisicao, resposta, proximo) => {
         });
       }
       await conexao.execute('UPDATE usuarios SET senha_hash = ? WHERE id_usuario = ?', [await bcrypt.hash(senha, 10), recuperacao.id_usuario]);
-      // Revoke other outstanding reset codes for the account as well.
+      // Invalida também os outros códigos de recuperação ainda ativos para esta conta.
       await conexao.execute('UPDATE recuperacoes_senha SET utilizado = TRUE, utilizado_em = NOW() WHERE id_usuario = ? AND utilizado = FALSE', [recuperacao.id_usuario]);
       await conexao.commit();
       resposta.json({

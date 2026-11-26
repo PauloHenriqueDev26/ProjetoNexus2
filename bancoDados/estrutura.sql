@@ -1,3 +1,8 @@
+-- Schema completo do Nexus Finance.
+-- Cria banco, tipos auxiliares, usuários, contas, categorias, transações, metas, recorrências,
+-- notificações, recuperações de senha e estruturas de anexos/privacidade.
+-- As restrições garantem integridade referencial e os índices aceleram consultas frequentes.
+
 -- =====================================================
 -- BANCO DE DADOS - NEXUS
 -- SISTEMA DE GESTÃO FINANCEIRA

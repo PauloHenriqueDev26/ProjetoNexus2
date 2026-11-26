@@ -6,6 +6,9 @@ import { bancoDados } from "../bancoDados/bancoDados";
 import { ErroApi } from "../middlewares/erros";
 import { identificadorPositivo } from "../servicos/transacoes";
 import { diretorioAnexos } from "../servicos/anexos";
+// Rotas auxiliares de opções financeiras e anexos.
+// Expõem categorias, tipos de conta e permitem criar categorias pessoais do usuário.
+// Os arquivos só podem ser baixados pelo usuário proprietário da transação.
 export const rotasOpcoesFinanceiras = Router();
 rotasOpcoesFinanceiras.get('/financeiro/opcoes', async (requisicao: RequisicaoAutenticada, resposta, proximo) => {
   try {

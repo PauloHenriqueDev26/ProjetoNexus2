@@ -2,7 +2,9 @@ import React, { useMemo } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useEstilosApp } from '../style/style';
 
-/** Container visual compartilhado pelos cards do painel financeiro. */
+/** Container visual usado nos cards do painel financeiro.
+ * Centraliza borda, sombra, espaçamento e fundo, permitindo que os filhos definam o conteúdo.
+ */
 export default function CartaoPainel({ children, style, ...props }) {
   const { cores } = useEstilosApp();
   const styles = useMemo(() => StyleSheet.create({
@@ -17,5 +19,8 @@ export default function CartaoPainel({ children, style, ...props }) {
     },
   }), [cores]);
 
+  // useMemo evita recriar o objeto de estilos enquanto as cores não mudarem.
+  // props permite repassar accessibilityLabel, testID e outras propriedades nativas ao View.
+  // style é aplicado por último para permitir ajustes locais.
   return <View {...props} style={[styles.card, style]}>{children}</View>;
 }

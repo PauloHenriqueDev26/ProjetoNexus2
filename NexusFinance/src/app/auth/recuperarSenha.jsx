@@ -109,3 +109,7 @@ export default function RecuperarSenha() {
     <ModalAviso visivel={Boolean(mensagemEnvio)} titulo="Confira seu e-mail" mensagem={mensagemEnvio} tipo="informacao" aoFechar={() => setMensagemEnvio('')} />
     </>;
 }
+// enviarCodigo solicita o código e limpa recuperação anterior para iniciar um fluxo novo.
+// verificarCodigo exige seis dígitos e, ao validar, salva e-mail/código temporariamente.
+// autenticado escolhe a rota alterarSenha; usuário público escolhe novaSenha.
+// useEffect limpa dados pendentes ao abrir a tela.

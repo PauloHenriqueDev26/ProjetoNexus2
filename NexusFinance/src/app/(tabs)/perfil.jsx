@@ -10,6 +10,8 @@ import { useEstilosApp } from "../../style/style";
 import { formatarReais, apiAutenticada } from "../../servicos/financeiro";
 import { useSessao } from "../../contextos/ContextoSessao";
 import { useResumoFinanceiro } from "../../ganchos/useResumoFinanceiro";
+// Tela de perfil e dados do usuário autenticado.
+// Permite editar foto/cadastro e navegar para ações relacionadas à conta.
 export default function Perfil() {
   const {
     cores,
@@ -217,3 +219,7 @@ export default function Perfil() {
       <BarraNavegacao />
     </TelaAnimada>;
 }
+// selecionandoFoto/trava impede picker duplicado; salvandoFoto controla botão enquanto envia.
+// alterarFoto valida tipo pelo picker, limite de 2 MB e envia JPEG/PNG como multipart.
+// sair tenta revogar logout no servidor, mas sempre encerra a sessão local se a API falhar.
+// totais vêm do resumo financeiro e alimentam os quatro indicadores da conta.

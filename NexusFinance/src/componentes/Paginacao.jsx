@@ -2,6 +2,8 @@ import { Pressable, Text, View } from 'react-native';
 import Icon from '@expo/vector-icons/MaterialIcons';
 import { useTema } from '../contextos/ContextoTema';
 
+// Controle visual de navegação entre páginas.
+// Desabilita anteriores/próximos nos extremos e informa a página atual ao callback.
 export default function Paginacao({ pagina, total, aoMudar }) {
   const { cores } = useTema();
   if (total <= 1) return null;
@@ -30,3 +32,7 @@ export default function Paginacao({ pagina, total, aoMudar }) {
     </View>
   );
 }
+
+// total <= 1 oculta controles desnecessários.
+// direcao -1 representa anterior, 0 representa o rótulo e 1 representa próxima página.
+// desabilitado impede navegar além da primeira ou última página.

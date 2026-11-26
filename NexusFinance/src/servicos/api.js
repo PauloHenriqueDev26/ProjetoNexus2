@@ -1,5 +1,8 @@
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
+// Cliente HTTP central usado pelas chamadas de API do aplicativo.
+// Detecta a URL correta em web/emulador/dispositivo e padroniza JSON, erros e mensagens ao usuário.
+// Requisições multipart são enviadas sem forçar o cabeçalho Content-Type do JSON.
 function obterUrlApi() {
   if (process.env.EXPO_PUBLIC_API_URL) {
     return process.env.EXPO_PUBLIC_API_URL.replace(/\/$/, '');

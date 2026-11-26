@@ -6,6 +6,8 @@ import { TelaAnimada } from "../../componentes/TelaAnimada";
 import { salvarCadastroPendente } from "../../servicos/fluxoAutenticacao";
 import { validarEmail } from "../../servicos/validacoes";
 import { useEstilosApp } from "../../style/style";
+// Primeira etapa do cadastro.
+// Coleta nome, e-mail e data de nascimento e repassa os dados validados para criação da senha.
 export default function Cadastro() {
   const {
     cores,
@@ -45,3 +47,5 @@ export default function Cadastro() {
       </AreaTeclado>
     </TelaAnimada>;
 }
+// continuar valida nome/e-mail e guarda os dados temporários antes de navegar para criação da senha.
+// Nenhum usuário é criado nesta tela: isso ocorre ao concluir a etapa seguinte.

@@ -9,6 +9,8 @@ import { useEstilosApp } from "../../style/style";
 import { apiAutenticada } from "../../servicos/financeiro";
 import { exportarCSV } from "../../servicos/arquivos";
 import { useTema } from "../../contextos/ContextoTema";
+// Tela de preferências da conta e do aplicativo.
+// Inclui tema, notificações e acesso às opções de privacidade/cadastro disponíveis.
 export default function Configuracoes() {
   const {
     tema,
@@ -29,6 +31,7 @@ export default function Configuracoes() {
   const [confirmandoExclusao, setConfirmandoExclusao] = useState(false);
   const [exclusaoRegistrada, setExclusaoRegistrada] = useState('');
   const [erro, setErro] = useState('');
+  // useFocusEffect recarrega preferências sempre que a tela ganha foco.
   useFocusEffect(useCallback(() => {
     let ativo = true;
     setCarregando(true);
@@ -42,6 +45,7 @@ export default function Configuracoes() {
       ativo = false;
     };
   }, []));
+  // alterarNotificacoes atualiza o servidor e só altera o estado local após sucesso.
   async function alterarNotificacoes(valor) {
     if (salvando) return;
     setSalvando(true);
@@ -60,6 +64,7 @@ export default function Configuracoes() {
       setSalvando(false);
     }
   }
+  // exportar solicita todas as transações e gera CSV no dispositivo.
   async function exportar() {
     if (exportando) return;
     setExportando(true);
@@ -75,6 +80,7 @@ export default function Configuracoes() {
       setExportando(false);
     }
   }
+  // solicitarExclusao registra uma solicitação de privacidade sem apagar imediatamente os dados.
   async function solicitarExclusao() {
     if (solicitandoExclusao) return;
     setConfirmandoExclusao(false);

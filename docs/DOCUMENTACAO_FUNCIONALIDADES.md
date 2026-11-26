@@ -1,5 +1,7 @@
 # Guia do Nexus Finance
 
+Para explicações detalhadas dos blocos de código, tecnologias e cálculos, consulte [GUIA_COMENTADO.md](GUIA_COMENTADO.md).
+
 O Nexus Finance reúne receitas, despesas, metas de economia e relatórios em uma conta pessoal. O aplicativo usa Expo e React Native para web, Android e iOS. A API Express em TypeScript valida as operações, calcula os indicadores e persiste os dados no MySQL.
 
 ## Instalação local

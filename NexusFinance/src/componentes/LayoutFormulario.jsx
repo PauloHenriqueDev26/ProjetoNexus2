@@ -87,7 +87,7 @@ export function RolagemFormulario({
       rolagemManual.current = false;
       revelar();
       clearTimeout(temporizadorAjuste.current);
-      // Native window resizing and iOS accessory layout may finish after the event.
+      // O redimensionamento nativo e o layout dos acessórios do iOS podem terminar após o evento.
       temporizadorAjuste.current = setTimeout(revelar, (evento.duration || 0) + 100);
     };
     const ocultar = () => {
@@ -205,3 +205,10 @@ const criarEstilos = cores => StyleSheet.create({
     fontWeight: '600'
   }
 });
+
+// ContextoFormulario compartilha o ID do accessory do iOS e o campo atualmente focado.
+// AreaTeclado aplica offsets seguros evitando que o cabeçalho cubra os campos.
+// RolagemFormulario mede a área visível e desloca o campo focado acima do teclado.
+// CampoFormulario aplica máscara opcional e configura cores/acessório de teclado.
+// Layout responsivo para páginas de formulário.
+// Organiza cabeçalho, campos e ações enquanto aplica segurança contra teclado sobre os inputs.

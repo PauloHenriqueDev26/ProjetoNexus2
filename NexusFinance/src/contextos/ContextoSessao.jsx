@@ -1,6 +1,9 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react';
 import { requisicaoApi } from "../servicos/api";
 import { obterToken, removerToken, salvarToken } from "../servicos/sessao";
+// Contexto global de sessão do aplicativo.
+// Restaura o token ao iniciar, consulta o usuário atual e fornece login/logout para todas as telas.
+// useSessao lança erro se for usado fora deste provedor, evitando estados de autenticação inválidos.
 const ContextoSessao = createContext(null);
 export function ProvedorSessao({
   children: filhos

@@ -31,3 +31,8 @@ export default function BoasVindas() {
       </ScrollView>
     </TelaAnimada>;
 }
+
+/*
+Tela pública de apresentação do aplicativo.
+Apresenta benefícios básicos e direciona o usuário para login ou cadastro.
+*/

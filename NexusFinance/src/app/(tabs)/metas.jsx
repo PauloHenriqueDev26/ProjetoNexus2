@@ -281,3 +281,10 @@ export default function Metas() {
       <BarraNavegacao />
     </TelaAnimada>;
 }
+
+// Gerencia metas financeiras do usuário.
+// Permite criar, ajustar valor atual e acompanhar progresso até o objetivo.
+// valorParaInput transforma número em texto brasileiro com duas casas.
+// moedaParaNumero aceita vírgula, ponto decimal ou separador de milhar brasileiro.
+// progresso limita o percentual em 100; concluida identifica meta concluída pelo status ou progresso.
+// modalVisivel separa criação/edição; metaParaExcluir controla confirmação de exclusão.

@@ -1,3 +1,7 @@
+// Utilitários de API autenticada e formatação financeira.
+// apiAutenticada recupera o token salvo e o envia como Authorization Bearer em cada chamada.
+// Os demais helpers convertem valores em moeda brasileira e datas em formato local.
+
 import { requisicaoApi } from './api';
 import { obterToken } from "./sessao";
 export async function apiAutenticada(caminho, opcoes = {}) {

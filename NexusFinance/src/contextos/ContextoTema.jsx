@@ -7,6 +7,9 @@ import * as SecureStore from 'expo-secure-store';
 import { useSessao } from "./ContextoSessao";
 import { requisicaoApi } from "../servicos/api";
 import { temaValido, paletas } from "../tema/paletas";
+// Contexto global de tema claro/escuro.
+// Restaura uma preferência local e sincroniza com a preferência salva no usuário autenticado.
+// Também entrega cores, estilos memoizados e configura a barra de navegação/status do sistema.
 const ContextoTema = createContext(null);
 const CHAVE_APARELHO = 'nexus_theme';
 const ler = async chave => Platform.OS === 'web' ? localStorage.getItem(chave) : SecureStore.getItemAsync(chave);

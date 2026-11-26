@@ -6,6 +6,9 @@ import { CampoFormulario } from "./LayoutFormulario";
 import { useTema } from "../contextos/ContextoTema";
 import { formatarEntradaData } from "../servicos/entradaData.mjs";
 
+// Campo controlado de data com máscara de entrada.
+// Abre o calendário ou teclado conforme a plataforma e devolve o valor normalizado ao pai.
+
 export default function CampoData({
   value: valor,
   onChangeText: aoAlterarTexto,
@@ -82,3 +85,7 @@ const estilos = StyleSheet.create({
     textAlign: 'left'
   }
 });
+// mostrarCalendario controla o modal; Calendario entrega uma data brasileira já formatada.
+// lidarAlteracao aplica máscara em cada tecla digitada.
+// aoSelecionarData fecha o modal antes de devolver o valor ao formulário pai.
+// Ao abrir, fecha o teclado físico para evitar sobreposição com o calendário.

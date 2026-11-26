@@ -4,6 +4,8 @@ import { Pressable, ScrollView, Text, View } from 'react-native';
 import { TelaAnimada } from "../../componentes/TelaAnimada";
 import { SeletoresTransacao } from "../../componentes/OpcoesTransacao";
 import { useOpcoesTransacao } from "../../ganchos/useOpcoesTransacao";
+// Tela para consultar e criar categorias pessoais de receitas e despesas.
+// Sincroniza a seleção com os formulários de novas transações.
 function CategoriasDoTipo({
   tipo
 }) {
@@ -46,6 +48,9 @@ export default function Categorias() {
               </Text>
             </Pressable>)}
         </View>
+        {/* tipo representa Receita ou Despesa selecionada pelo usuário. */}
+        {/* CategoriasDoTipo instancia o hook para carregar categorias exclusivamente desse tipo. */}
+        {/* key={tipo} força remontagem ao trocar a categoria, evitando estados misturados. */}
         <CategoriasDoTipo key={tipo} tipo={tipo} />
       </ScrollView>
     </TelaAnimada>;

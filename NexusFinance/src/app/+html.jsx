@@ -14,3 +14,6 @@ export default function DocumentoHtml({
       <body>{filhos}</body>
     </html>;
 }
+
+// Documento HTML raiz usado pelo Expo na versão web.
+// Configura idioma, viewport, escala inicial e elementos necessários para servir o aplicativo React Native Web.

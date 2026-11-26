@@ -4,6 +4,13 @@ import { StyleSheet, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import CabecalhoTela, { ContextoAlturaCabecalho } from "./CabecalhoTela";
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated';
+
+// Wrapper que aplica animação de entrada às telas.
+// Mantém o conteúdo acessível durante a transição e respeita o tema do aplicativo.
+// TelaAnimada mede o cabeçalho real e fornece sua altura ao layout dos formulários.
+// larguraMaxima centraliza telas em dispositivos/tablets grandes.
+// animada permite usar View comum sem Reanimated quando necessário.
+// CartaoAnimado aplica entrada individual a um bloco da interface.
 export function TelaAnimada({
   children: filhos,
   style: estilo,

@@ -2,6 +2,11 @@ import multer from 'multer';
 import path from 'node:path';
 import { mkdir, unlink, writeFile } from 'node:fs/promises';
 import { createHash, randomUUID } from 'node:crypto';
+
+// Serviço de anexos financeiros.
+// Multer recebe apenas um arquivo por requisição e mantém o conteúdo em memória até a validação.
+// O arquivo é salvo com UUID aleatório; metadados e checksum ficam registrados no banco.
+
 export const diretorioAnexos = path.resolve(process.env.UPLOAD_DIR || path.join(__dirname, '../../uploads/transacoes'));
 export const upload = multer({
   storage: multer.memoryStorage(),

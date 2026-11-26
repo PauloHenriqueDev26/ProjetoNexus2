@@ -9,6 +9,8 @@ import { limparRecuperacaoPendente, obterRecuperacaoPendente } from "../servicos
 import { erroSenha } from "../servicos/validacoes";
 import { useEstilosApp } from "../style/style";
 import { useSessao } from "../contextos/ContextoSessao";
+// Formulário reutilizado para criação ou alteração de senha.
+// Mantém visibilidade dos campos, valida correspondência e requisitos e informa erros da API.
 export default function FormularioNovaSenha({ alteracao = false }) {
   const { encerrarSessao } = useSessao();
   const recuperacao = obterRecuperacaoPendente();
@@ -91,3 +93,8 @@ export default function FormularioNovaSenha({ alteracao = false }) {
     <ModalAviso visivel={sucesso} titulo="Senha alterada!" mensagem="Sua nova senha foi salva com sucesso. Entre na sua conta para continuar." textoBotao="Ir para o login" aoFechar={irParaLogin} />
     </>;
 }
+
+// senha: campo atual; confirmarSenha: confirmação digitada.
+// erro: mensagem exibida ao usuário; carregando: evita submissões simultâneas.
+// sucesso: mostra modal e inicia redirecionamento automático após 1,5 segundo.
+// alterarSenha valida recuperação, força senha segura e confirma igualdade antes da API.

@@ -100,3 +100,7 @@ export default function LayoutPrincipal() {
       </ProvedorTema>
     </ProvedorSessao>;
 }
+
+// Layout raiz da navegação Expo Router.
+// Inicializa sessão e tema antes de renderizar as telas e define quais rotas são públicas ou protegidas.
+// Stack.Protected impede que usuários sem login acessem áreas autenticadas e vice-versa.

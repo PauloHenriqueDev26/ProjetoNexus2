@@ -1,5 +1,7 @@
 import nodemailer from 'nodemailer';
 import { configuracao } from "../config/configuracao";
+// Serviço responsável pelo envio SMTP de códigos de recuperação de senha.
+// Usa as configurações centralizadas e deixa o transporte seguro dependendo da porta configurada.
 export async function enviarCodigoRecuperacao(email: string, codigo: string): Promise<void> {
   if (!configuracao.email.user || !configuracao.email.password) {
     return;

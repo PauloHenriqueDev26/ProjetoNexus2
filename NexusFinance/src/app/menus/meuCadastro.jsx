@@ -11,6 +11,8 @@ import Icon from '@expo/vector-icons/MaterialIcons';
 import { useEstilosApp } from "../../style/style";
 import { apiAutenticada } from "../../servicos/financeiro";
 import { useSessao } from "../../contextos/ContextoSessao";
+// Tela para visualização e alteração dos dados pessoais do usuário.
+// Valida nome/e-mail/data antes de enviar uma atualização autenticada.
 export default function MeuCadastro() {
   const {
     cores,
@@ -173,3 +175,7 @@ export default function MeuCadastro() {
       </AreaTeclado>
     </TelaAnimada>;
 }
+// original guarda a versão carregada da API para detectar alteração real antes de salvar.
+// semAlteracao compara todos os campos depois de remover espaços extras das extremidades.
+// nascimento é enviado junto com o nome, e-mail e telefone após validar o formato.
+// sucesso abre modal e redireciona ao perfil; erro aparece na própria tela.

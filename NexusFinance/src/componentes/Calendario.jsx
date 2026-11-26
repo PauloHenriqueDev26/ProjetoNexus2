@@ -4,6 +4,9 @@ import Icon from '@expo/vector-icons/MaterialIcons';
 import { useTema } from '../contextos/ContextoTema';
 import { dataParaIso, formatarEntradaData } from '../servicos/entradaData.mjs';
 
+// Componente de seleção de data em calendário.
+// Converte entre data visual brasileira e ISO, respeitando limites mínimos/máximos quando informados.
+
 const DIAS = ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'];
 
 export default function Calendario({ valor, aoSelecionar, aoFechar }) {
@@ -60,3 +63,9 @@ export default function Calendario({ valor, aoSelecionar, aoFechar }) {
     </Modal>
   );
 }
+
+// dataParaIso tenta interpretar o valor atual; selecionada é usado para destacar o dia.
+// mes guarda o mês em exibição e muda ao navegar.
+// primeiroDia indica quantas células vazias aparecem antes do dia 1.
+// totalDias é calculado pelo último dia do mês.
+// Converte ano/mês/dia para ISO e compara com a data selecionada.

@@ -6,6 +6,8 @@ import { TelaAnimada } from "../../componentes/TelaAnimada";
 import { requisicaoApi } from "../../servicos/api";
 import { useSessao } from "../../contextos/ContextoSessao";
 import { useEstilosApp } from "../../style/style";
+// Tela de autenticação por e-mail e senha.
+// Valida campos localmente, chama a API, salva o token no contexto e navega para áreas privadas.
 export default function Login() {
   const {
     cores,
@@ -78,3 +80,5 @@ export default function Login() {
       </AreaTeclado>
     </TelaAnimada>;
 }
+// entrar valida presença antes da chamada; iniciarSessao persiste token e usuário; falha mostra mensagem da API.
+// criarConta e recuperarSenha são navegações públicas auxiliares.

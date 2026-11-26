@@ -12,19 +12,21 @@ import { apiAutenticada, formatarReais } from '../servicos/financeiro';
 const MESES = ['jan', 'fev', 'mar', 'abr', 'mai', 'jun', 'jul', 'ago', 'set', 'out', 'nov', 'dez'];
 const rotuloMes = periodo => `${MESES[Number(periodo.slice(5, 7)) - 1]}/${periodo.slice(2, 4)}`;
 
+// Níveis de alerta do limite:
+// - Verde: até 69,9%, gasto ainda dentro de uma faixa confortável;
+// - Laranja: de 70% a 99,9%, limite merece atenção;
+// - Vermelho: a partir de 100%, limite atingido ou ultrapassado.
 function obterCorPorPercentual(percentual, cores) {
   if (!Number.isFinite(percentual) || percentual <= 0) return cores.sucesso;
   if (percentual >= 100) return cores.perigo;
-  if (percentual >= 90) return cores.graficoLaranja;
-  if (percentual >= 70) return cores.aviso;
+  if (percentual >= 70) return cores.graficoLaranja;
   return cores.sucesso;
 }
 
 function obterSituacaoPorPercentual(percentual) {
   if (!Number.isFinite(percentual) || percentual <= 0) return 'Dentro do planejado';
   if (percentual >= 100) return 'Limite atingido ou ultrapassado';
-  if (percentual >= 90) return 'Perto de estourar';
-  if (percentual >= 70) return 'Atenção aos gastos';
+  if (percentual >= 70) return 'Atenção: limite perto do máximo';
   return 'Dentro do planejado';
 }
 
@@ -125,17 +127,30 @@ export default function VisaoFinanceira({ dados, aoExportar, exportando = false,
     fecharModalLimite();
   };
 
-  const listaLimites = categorias.length ? categorias.map(item => ({ nome: item.nome, valor: Number(item.valor) || 0 })) : [];
+  // MESES converte número do período em abreviação; rotuloMes monta jan/26, por exemplo.
+  // obterCorPorPercentual usa verde, amarelo ou vermelho conforme proximidade do limite.
+  // obterSituacaoPorPercentual fornece a mensagem correspondente ao percentual.
+  // Só mostramos categorias que tiveram gasto no mês atual.
+  // Categorias com valor zero não recebem limite próprio nem confundem o usuário.
+  const listaLimites = categorias.length
+    ? categorias
+        .map(item => ({ nome: item.nome, valor: Number(item.valor) || 0 }))
+        .filter(item => item.valor > 0)
+    : [];
   const listaLimitesOrdenada = [...listaLimites].sort((a, b) => b.valor - a.valor);
   const categoriasVisiveis = mostrarTodasCategorias ? listaLimitesOrdenada : listaLimitesOrdenada.slice(0, 5);
   const temCategorias = listaLimitesOrdenada.length > 0;
   const totalGasto = listaLimitesOrdenada.reduce((acumulador, item) => acumulador + item.valor, 0);
-  const valorDisponivel = (limiteTotal || 0) - totalGasto;
-  const percentualUtilizado = limiteTotal > 0 ? (totalGasto / limiteTotal) * 100 : 0;
-  const corGastoTotal = obterCorPorPercentual(percentualUtilizado, cores);
-  const situacaoGastoTotal = obterSituacaoPorPercentual(percentualUtilizado);
+  // limiteDefinido informa se o usuário configurou um teto maior que zero.
+  const limiteDefinido = limiteTotal > 0;
+  // Sem limite definido, não faz sentido calcular disponível por subtração: disponível fica neutro em R$ 0,00.
+  const valorDisponivel = limiteDefinido ? limiteTotal - totalGasto : 0;
+  // A barra geral só recebe um percentual real quando existe limite configurado.
+  const percentualUtilizado = limiteDefinido ? (totalGasto / limiteTotal) * 100 : 0;
+  const corGastoTotal = limiteDefinido ? obterCorPorPercentual(percentualUtilizado, cores) : cores.textoSecundario;
+  // Sem limite, orienta o usuário a definir o teto; com limite, usa a situação pelos percentuais.
+  const situacaoGastoTotal = limiteDefinido ? obterSituacaoPorPercentual(percentualUtilizado) : 'Defina um limite para acompanhar';
   const existemMaisCategorias = listaLimitesOrdenada.length > 5;
-  const textoBotaoLimite = Number(limiteTotal) > 0 ? 'Editar' : 'Adicionar';
 
   return <View style={estilos.visaoGeral}>
     <View style={[estilos.grade, larguraGrande && estilos.duasColunas]}>
@@ -146,89 +161,162 @@ export default function VisaoFinanceira({ dados, aoExportar, exportando = false,
         {!!historico.length && <Text style={estilos.nota}>O mês atual considera os valores até a data de referência.</Text>}
       </Cartao>
 
-      <Cartao titulo="Projeção do mês" subtitulo={`Estimativa até o fim do mês · ${referencia}`} aoExportar={aoExportar ? () => aoExportar('indicadores') : undefined} exportando={exportando} style={larguraGrande && estilos.coluna}>
+      <Cartao titulo="Estimativa do mês" subtitulo={`Previsão até o fim do mês · ${referencia}`} aoExportar={aoExportar ? () => aoExportar('indicadores') : undefined} exportando={exportando} style={larguraGrande && estilos.coluna}>
+        {/* Receita estimada = realizada + prevista; despesa estimada = realizada + prevista. */}
         {[
-          ['Receitas estimadas', previsao.totalReceitas, cores.sucesso],
-          ['Despesas estimadas', previsao.totalDespesas, cores.perigo],
-          ['Resultado estimado', previsao.saldo, Number(previsao.saldo) < 0 ? cores.perigo : cores.textoLink],
-        ].map(([nome, valor, cor]) => <View key={nome} style={estilos.linhaResumo}>
-          <Text style={estilos.rotulo}>{nome}</Text>
-          <Text style={[estilos.valorResumo, { color: cor }]}>{formatarReais(valor)}</Text>
-        </View>)}
-        <Text style={estilos.nota}>Já realizado: receitas {formatarReais(previsao.receitasRealizadas || 0)} · despesas {formatarReais(previsao.despesasRealizadas || 0)}</Text>
-        <Text style={estilos.nota}>Ainda previsto: receitas {formatarReais(previsao.receitasPrevistas || 0)} · despesas {formatarReais(previsao.despesasPrevistas || 0)}</Text>
-        <Text style={estilos.nota}>Considera apenas lançamentos cadastrados até o fim do mês; não prevê gastos ou receitas ainda não registrados.</Text>
+          ['Receitas do mês', previsao.totalReceitas, previsao.receitasRealizadas, previsao.receitasPrevistas, cores.sucesso],
+          ['Despesas do mês', previsao.totalDespesas, previsao.despesasRealizadas, previsao.despesasPrevistas, cores.perigo],
+        ].map(([nome, total, realizado, previsto, cor]) => {
+          const realizadoSeguro = Number(realizado) || 0;
+          const previstoSeguro = Number(previsto) || 0;
+          const totalSeguro = Number(total) || realizadoSeguro + previstoSeguro;
+          const percentualRealizado = totalSeguro > 0 ? Math.min(100, (realizadoSeguro / totalSeguro) * 100) : 0;
+
+          return <View key={nome} style={estilos.linhaResumo}>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'baseline', gap: 8 }}>
+              <Text style={estilos.rotulo}>{nome}</Text>
+              <Text style={[estilos.valorResumo, { color: cor }]}>{formatarReais(totalSeguro)}</Text>
+            </View>
+            <View style={{ height: 7, borderRadius: 5, backgroundColor: cores.superficieElevada, overflow: 'hidden', marginTop: 8 }}>
+              <View style={{ height: '100%', width: `${percentualRealizado}%`, borderRadius: 5, backgroundColor: cor }} />
+            </View>
+            <Text style={estilos.pequeno}>
+              Já realizado: {formatarReais(realizadoSeguro)} · Ainda previsto: {formatarReais(previstoSeguro)}
+            </Text>
+          </View>;
+        })}
+
+        <View style={{ paddingVertical: 14, marginTop: 4, borderTopWidth: 1, borderTopColor: cores.divisor }}>
+          <Text style={estilos.rotulo}>Resultado estimado do mês</Text>
+          <Text style={{ color: Number(previsao.saldo) < 0 ? cores.perigo : cores.sucesso, fontSize: 20, fontWeight: '800', marginTop: 4 }}>
+            {formatarReais(previsao.saldo)}
+          </Text>
+          <Text style={estilos.pequeno}>
+            Receitas estimadas menos despesas estimadas deste mês. Não inclui o saldo que já existia antes do mês.
+          </Text>
+
+          <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 }}>
+            <View style={{ flexGrow: 1, flexBasis: 145, padding: 12, borderRadius: 12, backgroundColor: cores.superficieElevada }}>
+              <Text style={estilos.rotuloResumo}>Saldo disponível agora</Text>
+              <Text style={{ color: Number(dados.saldoDisponivel) < 0 ? cores.perigo : cores.sucesso, fontSize: 16, fontWeight: '800', marginTop: 4 }}>
+                {formatarReais(dados.saldoDisponivel)}
+              </Text>
+              <Text style={estilos.pequeno}>Já considera o que ocorreu até hoje.</Text>
+            </View>
+
+            <View style={{ flexGrow: 1, flexBasis: 145, padding: 12, borderRadius: 12, backgroundColor: cores.superficieElevada }}>
+              <Text style={estilos.rotuloResumo}>Saldo no fim do mês</Text>
+              <Text style={{ color: Number(dados.saldoPrevisto) < 0 ? cores.perigo : cores.textoLink, fontSize: 16, fontWeight: '800', marginTop: 4 }}>
+                {formatarReais(dados.saldoPrevisto)}
+              </Text>
+              <Text style={estilos.pequeno}>Saldo atual mais receitas previstas menos despesas previstas.</Text>
+            </View>
+          </View>
+
+          <Text style={[estilos.pequeno, { marginTop: 10 }]}>Já realizado no mês: {formatarReais(previsao.saldoRealizado)} · Efeito dos lançamentos previstos: {formatarReais(previsao.saldoPrevistoRestante)}</Text>
+        </View>
+
+        <Text style={estilos.nota}>Inclui somente lançamentos confirmados, pendentes ou agendados até o fim deste mês; não adiciona valores que ainda não foram cadastrados.</Text>
       </Cartao>
     </View>
 
     <View style={[estilos.grade, larguraGrande && estilos.duasColunas]}>
-      <Cartao titulo="Limite de gastos" subtitulo="Distribuição das despesas">
-        {temCategorias ? (
-          <View style={estilos.cabecalhoLimite}>
-            <View style={estilos.totalLimiteBox}>
-              <Text style={estilos.rotulo}>Total do limite</Text>
-              <Text style={estilos.valorTotalLimite}>{formatarReais(limiteTotal || 0)}</Text>
+      <Cartao
+        titulo="Planejamento mensal"
+        subtitulo="O limite abaixo vale para todas as despesas do mês."
+      >
+        {/* Cabeçalho do limite: valor único, botão de edição e estado geral. */}
+        {limiteDefinido ? (
+          <View style={{ borderRadius: 16, borderWidth: 1, borderColor: cores.borda, backgroundColor: cores.superficieElevada, padding: 14, marginBottom: 16 }}>
+            <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
+              <View style={{ flex: 1, minWidth: 0 }}>
+                <Text style={estilos.rotuloResumo}>Limite mensal único</Text>
+                <Text style={{ color: cores.textoPrincipal, fontSize: 24, lineHeight: 30, fontWeight: '800', marginTop: 3 }}>
+                  {formatarReais(limiteTotal)}
+                </Text>
+              </View>
+              <Pressable accessibilityRole="button" accessibilityLabel="Editar limite mensal" onPress={abrirModalLimite} style={estilos.botaoAdicionarContainer}>
+                <Text style={estilos.textoBotaoLimite}>Editar limite</Text>
+              </Pressable>
             </View>
-            <Pressable accessibilityRole="button" accessibilityLabel={textoBotaoLimite === 'Adicionar' ? 'Adicionar limite de gastos' : 'Editar limite de gastos'} onPress={abrirModalLimite} style={estilos.botaoAdicionarContainer}>
-              <Text style={estilos.textoBotaoLimite}>{textoBotaoLimite}</Text>
-            </Pressable>
+
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-end', gap: 12, marginTop: 14 }}>
+              <View style={{ flex: 1 }}>
+                <Text style={estilos.rotuloResumo}>Gasto no mês</Text>
+                <Text style={{ color: corGastoTotal, fontSize: 17, fontWeight: '800', marginTop: 3 }}>{formatarReais(totalGasto)}</Text>
+              </View>
+              <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                <Text style={estilos.rotuloResumo}>{valorDisponivel >= 0 ? 'Ainda disponível' : 'Acima do limite'}</Text>
+                <Text style={{ color: valorDisponivel >= 0 ? corGastoTotal : cores.perigo, fontSize: 17, fontWeight: '800', marginTop: 3 }}>
+                  {formatarReais(Math.abs(valorDisponivel))}
+                </Text>
+              </View>
+            </View>
+
+            <View style={{ height: 10, borderRadius: 6, backgroundColor: cores.superficieElevada, overflow: 'hidden', marginTop: 14 }}>
+              <View style={{ height: '100%', width: `${Math.min(100, percentualUtilizado)}%`, borderRadius: 6, backgroundColor: corGastoTotal }} />
+            </View>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 10, marginTop: 7 }}>
+              <Text style={[estilos.pequeno, { color: corGastoTotal, flex: 1 }]}>
+                {percentualUtilizado.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% utilizado
+              </Text>
+              <Text style={[estilos.pequeno, { color: corGastoTotal, flex: 1, textAlign: 'right' }]}>
+                {situacaoGastoTotal}
+              </Text>
+            </View>
           </View>
         ) : (
           <View style={estilos.areaVazia}>
+            <Text style={estilos.vazio}>Defina um único limite para todas as despesas deste mês.</Text>
             <Pressable accessibilityRole="button" accessibilityLabel="Adicionar limite de gastos" onPress={abrirModalLimite} style={estilos.botaoAdicionarCentralizado}>
-              <Text style={estilos.textoBotaoAdicionarVazio}>Adicionar</Text>
+              <Text style={estilos.textoBotaoAdicionarVazio}>Adicionar limite</Text>
             </Pressable>
           </View>
         )}
 
-        {categoriasVisiveis.length ? categoriasVisiveis.map((item, index) => {
-          const valor = Number(item.valor) || 0;
-          const percentual = limiteTotal > 0 ? valor / limiteTotal * 100 : 0;
-          const corCategoria = obterCorPorPercentual(percentual, cores);
-          const situacaoCategoria = obterSituacaoPorPercentual(percentual);
-          return <View key={`${item.nome}-${index}`} style={estilos.categoria}>
-            <View style={estilos.categoriaCabecalho}><Text style={estilos.rotulo}>{item.nome}</Text><Text style={[estilos.valorResumo, { color: corCategoria }]}>{formatarReais(valor)}</Text></View>
-            <View style={estilos.trilho}><View style={[estilos.preenchimento, { width: `${Math.min(100, percentual)}%`, backgroundColor: corCategoria }]} /></View>
-            <Text style={[estilos.pequeno, { color: corCategoria }]}>{percentual.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% do limite total · {situacaoCategoria}</Text>
-          </View>;
-        }) : <Text style={estilos.vazio}>Nenhuma categoria registrada para esse limite.</Text>}
-
-        {existemMaisCategorias && (
-          <Pressable accessibilityRole="button" accessibilityLabel={mostrarTodasCategorias ? 'Ocultar outras categorias' : 'Mostrar outras categorias'} onPress={() => setMostrarTodasCategorias(valor => !valor)} style={estilos.botaoOutrasCategorias}>
-            <Text style={estilos.textoBotaoOutrasCategorias}>{mostrarTodasCategorias ? 'Ocultar' : 'Outras'}</Text>
-            <Icon name="arrow-forward" size={15} color={cores.textoPrincipal} />
-          </Pressable>
-        )}
-
-        {temCategorias && (
-          <View style={estilos.rodapeLimite}>
-            <View style={estilos.resumoLimite}>
-              <Text style={estilos.rotuloResumo}>Total gasto</Text>
-              <Text style={[estilos.valorResumoTotal, { color: corGastoTotal }]}>{formatarReais(totalGasto)}</Text>
+        {/* Distribuição das despesas: separada do status do limite. */}
+        {temCategorias ? (
+          <>
+            <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: 2, marginBottom: 2 }}>
+              <Text style={{ color: cores.textoPrincipal, fontSize: 14, fontWeight: '700' }}>Distribuição por categoria</Text>
+              <Text style={estilos.pequeno}>Do total gasto</Text>
             </View>
-            <View style={estilos.resumoLimiteRight}>
-              <Text style={estilos.rotuloResumo}>Disponível no limite</Text>
-              <Text style={[estilos.valorResumoDisponivel, { color: valorDisponivel < 0 ? cores.perigo : cores.sucesso }]}>{formatarReais(valorDisponivel)}</Text>
-            </View>
-          </View>
-        )}
 
-        {temCategorias && (
-          <View style={estilos.usoLimiteWrap}>
-            <View style={estilos.trilhoResumo}>
-              <View style={[estilos.preenchimentoResumo, { width: `${Math.min(100, percentualUtilizado)}%`, backgroundColor: corGastoTotal }]} />
-            </View>
-            <Text style={[estilos.pequeno, { color: corGastoTotal }]}>{percentualUtilizado.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% do limite total utilizado · {situacaoGastoTotal}</Text>
-          </View>
-        )}
+            {categoriasVisiveis.map((item, index) => {
+              const valor = Number(item.valor) || 0;
+              const participacao = totalGasto > 0 ? (valor / totalGasto) * 100 : 0;
+              return <View key={`${item.nome}-${index}`} style={estilos.categoria}>
+                <View style={estilos.categoriaCabecalho}>
+                  <Text style={estilos.rotulo}>{item.nome}</Text>
+                  <Text style={estilos.valorResumo}>{formatarReais(valor)}</Text>
+                </View>
+                <View style={estilos.trilho}>
+                  <View style={[estilos.preenchimento, { width: `${Math.min(100, participacao)}%`, backgroundColor: cores.primaria }]} />
+                </View>
+                <Text style={estilos.pequeno}>{participacao.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}% das despesas do mês</Text>
+              </View>;
+            })}
+
+            {existemMaisCategorias && (
+              <Pressable accessibilityRole="button" accessibilityLabel={mostrarTodasCategorias ? 'Ocultar outras categorias' : 'Mostrar outras categorias'} onPress={() => setMostrarTodasCategorias(valor => !valor)} style={estilos.botaoOutrasCategorias}>
+                <Text style={estilos.textoBotaoOutrasCategorias}>{mostrarTodasCategorias ? 'Ver menos' : 'Ver outras categorias'}</Text>
+                <Icon name={mostrarTodasCategorias ? 'arrow-upward' : 'arrow-forward'} size={15} color={cores.textoPrincipal} />
+              </Pressable>
+            )}
+          </>
+        ) : limiteDefinido ? (
+          <Text style={estilos.vazio}>Nenhuma despesa realizada neste mês ainda.</Text>
+        ) : null}
       </Cartao>
     </View>
 
     <Modal visible={modalLimiteVisivel} transparent animationType="fade" statusBarTranslucent onRequestClose={fecharModalLimite}>
       <Pressable style={estilos.fundoModal} onPress={fecharModalLimite}>
         <Pressable style={estilos.modalCartao} onPress={evento => evento.stopPropagation()}>
-          <Text style={estilos.modalTitulo}>Adicionar limite de gastos</Text>
-          <Text style={estilos.modalDescricao}>Informe o valor total disponível para gastar no mês, como por exemplo seu salário.</Text>
+          <Text style={estilos.modalTitulo}>{limiteDefinido ? 'Editar limite mensal' : 'Definir limite mensal'}</Text>
+          <Text style={estilos.modalDescricao}>
+            Informe o teto máximo para todas as despesas do mês. Esse valor não será repetido para cada categoria: ele será dividido pelo consumo real de todas elas.
+          </Text>
 
           <Text style={estilos.labelCampo}>Valor total do limite</Text>
           <TextInput
@@ -336,4 +424,15 @@ const criarEstilos = cores => StyleSheet.create({
   botaoSecundario: { backgroundColor: cores.superficieElevada },
   botaoDesabilitado: { opacity: 0.5 },
   textoBotaoModal: { fontWeight: '700', fontSize: 14, textAlign: 'center' },
+  resultadoMes: { marginTop: 4, paddingVertical: 14, borderTopWidth: 1, borderTopColor: cores.divisor },
+  resultadoMesCabecalho: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', gap: 12, flexWrap: 'wrap' },
+  resultadoMesTexto: { flex: 1, minWidth: 150, gap: 3 },
+  resultadoMesValor: { fontSize: 20, lineHeight: 26, fontWeight: '800', textAlign: 'right', flexShrink: 1 },
+  saldosProjecao: { flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 },
+  saldoProjecaoItem: { flexGrow: 1, flexBasis: 145, minWidth: 0, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: cores.borda, backgroundColor: cores.superficieElevada, gap: 4 },
+  saldoProjecaoValor: { fontSize: 16, lineHeight: 22, fontWeight: '800', flexShrink: 1 },
+  resultadoMesDetalhe: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', gap: 12, marginTop: 10, flexWrap: 'wrap' },
 });
+// Componente responsável por exibir o panorama financeiro completo.
+// Reúne evolução histórica, projeção do mês, limite de gastos por categoria e resumo de disponibilidade.
+// Também permite adicionar ou editar o limite total e exportar alguns cartões em PDF.

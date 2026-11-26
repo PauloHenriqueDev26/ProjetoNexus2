@@ -14,6 +14,14 @@ import { apiAutenticada, formatarReais } from "../../servicos/financeiro";
 import { useResumoFinanceiro } from "../../ganchos/useResumoFinanceiro";
 import { useSessao } from "../../contextos/ContextoSessao";
 
+// Tela inicial autenticada.
+// Resume saldo, metas e atividades recentes e oferece atalhos para receitas e despesas.
+
+// obterSaudacao usa o horário local para escolher Bom dia, Boa tarde ou Boa noite.
+// CartaoResumo encapsula ícone, título, valor, comparação e animação de pressão.
+// compacto adapta espaços e tamanhos em telas estreitas ou com fonte ampliada.
+// useFocusEffect recarrega metas toda vez que o usuário volta à tela.
+
 function obterSaudacao() {
   const hora = new Date().getHours();
   if (hora < 12) return 'Bom dia';
@@ -318,44 +326,6 @@ export default function Inicial() {
                   ) : null}
                 </CartaoPainel>
               </Animated.View>
-
-              <CartaoPainel style={{ marginTop: 16 }}>
-                <View style={{ flexDirection: 'row', alignItems: 'center', gap: 10, marginBottom: 14 }}>
-                  <View style={{ width: 38, height: 38, borderRadius: 13, backgroundColor: cores.primariaSuave, alignItems: 'center', justifyContent: 'center' }}>
-                    <Icon name="auto-awesome" size={20} color={cores.primaria} />
-                  </View>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: cores.textoPrincipal, fontSize: 17, fontWeight: '700' }}>Destaques do mês</Text>
-                    <Text style={{ color: cores.textoSecundario, fontSize: 12, marginTop: 2 }}>Uma visão rápida do que vem pela frente</Text>
-                  </View>
-                </View>
-
-                <Pressable accessibilityRole="button" onPress={() => router.push('/painel')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 10 }}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: cores.textoSecundario, fontSize: 12 }}>Resultado estimado no fechamento</Text>
-                    <Text style={{ color: Number(previsao.saldo) < 0 ? cores.perigo : cores.textoPrincipal, fontSize: 18, fontWeight: '700', marginTop: 3 }}>
-                      {valorFormatado(previsao.saldo)}
-                    </Text>
-                  </View>
-                  <Icon name="arrow-forward-ios" size={15} color={cores.textoSecundario} />
-                </Pressable>
-
-                <View style={{ height: 1, backgroundColor: cores.divisor }} />
-
-                <Pressable accessibilityRole="button" onPress={() => router.push('/painel')} style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12, paddingVertical: 12 }}>
-                  <View style={{ flex: 1 }}>
-                    <Text style={{ color: cores.textoSecundario, fontSize: 12 }}>Maior categoria de despesa</Text>
-                    <Text style={{ color: cores.textoPrincipal, fontSize: 14, fontWeight: '700', marginTop: 3 }}>
-                      {categoriaPrincipal?.nome || 'Sem despesas registradas'}
-                    </Text>
-                  </View>
-                  {categoriaPrincipal ? (
-                    <Text style={{ color: cores.perigo, fontSize: 13, fontWeight: '700' }}>
-                      {percentualCategoria.toLocaleString('pt-BR', { maximumFractionDigits: 1 })}%
-                    </Text>
-                  ) : null}
-                </Pressable>
-              </CartaoPainel>
 
               <View style={[{ marginTop: 16 }, compacto && { marginTop: 12 }]}> 
                 <VisaoFinanceira dados={dados} />
