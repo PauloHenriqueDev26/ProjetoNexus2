@@ -7,6 +7,7 @@ export default function AvatarPerfil({ foto, tamanho, cor }) {
   if (!foto) return <Icon name="person-outline" size={tamanho} color={cor} />;
   return (
     <Image
+      key={foto}
       source={{ uri: foto }}
       accessibilityLabel="Foto de perfil"
       resizeMode="cover"

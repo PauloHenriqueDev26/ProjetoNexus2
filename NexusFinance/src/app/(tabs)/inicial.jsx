@@ -267,10 +267,10 @@ export default function Inicial() {
                     <Pressable
                       accessibilityRole="button"
                       onPress={() => router.push('/metas')}
-                      style={{ minHeight: 40, paddingHorizontal: 12, borderRadius: 12, backgroundColor: '#251eae', flexDirection: 'row', alignItems: 'center', gap: 5 }}
+                      style={{ minHeight: 40, paddingHorizontal: 12, borderRadius: 999, backgroundColor: cores.primariaSuave, flexDirection: 'row', alignItems: 'center', gap: 5 }}
                     >
-                      <Text style={{ color: '#ffffff', fontSize: 12, fontWeight: '700' }}>Ver todas</Text>
-                      <Icon name="arrow-forward" size={15} color="#ffffff" />
+                      <Text style={{color: cores.primaria, fontSize: 12, fontWeight: '700', textAlign: 'center'}}>Ver todas</Text>
+                      <Icon name="arrow-forward" size={15} color={cores.primaria} />
                     </Pressable>
                   </View>
 

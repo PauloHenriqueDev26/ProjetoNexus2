@@ -44,13 +44,25 @@ export default function Perfil() {
       });
       if (resultado.canceled) return;
       const arquivo = resultado.assets[0];
-      if (Platform.OS === 'web') URL.revokeObjectURL(arquivo.uri);
       if (arquivo.size > 2 * 1024 * 1024) throw new Error('Escolha uma foto de até 2 MB.');
       const formulario = new FormData();
       if (Platform.OS === 'web') {
-        formulario.append('foto', arquivo.file, arquivo.name);
+        let arquivoWeb = arquivo.file;
+        if (!(arquivoWeb instanceof Blob)) {
+          const respostaArquivo = await fetch(arquivo.uri);
+          if (!respostaArquivo.ok) throw new Error('Não foi possível ler a foto selecionada.');
+          arquivoWeb = await respostaArquivo.blob();
+        }
+        const tipo = arquivo.mimeType || arquivoWeb.type || 'image/jpeg';
+        const nome = arquivo.name || `perfil-${Date.now()}.${tipo === 'image/png' ? 'png' : 'jpg'}`;
+        formulario.append('foto', new File([arquivoWeb], nome, { type: tipo }), nome);
       } else {
-        formulario.append('foto', { uri: arquivo.uri, name: arquivo.name, type: arquivo.mimeType || 'application/octet-stream' });
+        const nome = arquivo.name || `perfil-${Date.now()}.${arquivo.mimeType === 'image/png' ? 'png' : 'jpg'}`;
+        formulario.append('foto', {
+          uri: arquivo.uri,
+          name: nome,
+          type: arquivo.mimeType || (nome.toLowerCase().endsWith('.png') ? 'image/png' : 'image/jpeg')
+        });
       }
       const { fotoPerfil } = await apiAutenticada('/usuarios/me/foto', { method: 'PUT', body: formulario });
       setUsuario(atual => atual?.id === usuario.id ? { ...atual, fotoPerfil } : atual);

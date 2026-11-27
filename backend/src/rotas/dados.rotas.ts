@@ -309,11 +309,10 @@ rotasDados.put('/usuarios/me/foto', receberFoto, async (requisicao: RequisicaoAu
       return resposta.status(400).json({ mensagem: 'Selecione uma foto JPG ou PNG válida.' });
     }
 
-    const [resultado] = await bancoDados.execute<ResultSetHeader>(
+    await bancoDados.execute<ResultSetHeader>(
       'UPDATE usuarios SET foto_perfil_binaria = ? WHERE id_usuario = ? AND ativo = TRUE',
       [arquivo.buffer, requisicao.userId!]
     );
-    if (!resultado.affectedRows) return resposta.status(404).json({ mensagem: 'Usuário não encontrado.' });
     resposta.json({ fotoPerfil });
   } catch (falha) {
     proximo(falha);

@@ -190,8 +190,6 @@ export default function Configuracoes() {
           <Text style={estilos.cartaoTitulo}>Dados e ajuda</Text>
           {item('download', exportando ? 'Exportando...' : 'Exportar transações (CSV)', exportar, exportando)}
           <View style={estilos.divisor} />
-          {item('privacy-tip', solicitandoExclusao ? 'Enviando solicitação...' : 'Solicitar exclusão da conta', () => setConfirmandoExclusao(true), solicitandoExclusao)}
-          <View style={estilos.divisor} />
           {item('help-outline', 'Central de ajuda', () => router.push('/menus/centralAjuda'))}
           <View style={estilos.divisor} />
           {item('info', 'Sobre o aplicativo', () => router.push('/menus/sobreApp'))}

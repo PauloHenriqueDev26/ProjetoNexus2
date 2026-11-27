@@ -8,6 +8,13 @@ import { bancoDados } from "./bancoDados/bancoDados";
 
 // Realiza as inicializações necessárias antes de colocar o servidor HTTP disponível.
 async function iniciar(): Promise<void> {
+  // Permite enviar fotos de até 2 MB em uma única instrução preparada do MySQL.
+  try {
+    await bancoDados.query('SET GLOBAL max_allowed_packet = 16777216');
+  } catch (falha) {
+    console.warn('Não foi possível aumentar max_allowed_packet globalmente:', falha);
+  }
+
   // SELECT 1 funciona como uma verificação rápida: se a consulta falhar, o servidor não inicia.
   await bancoDados.query('SELECT 1');
 

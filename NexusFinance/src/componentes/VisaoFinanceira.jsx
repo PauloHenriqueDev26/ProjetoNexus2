@@ -196,7 +196,7 @@ export default function VisaoFinanceira({ dados, aoExportar, exportando = false,
           </Text>
 
           <View style={{ flexDirection: 'row', flexWrap: 'wrap', gap: 10, marginTop: 12 }}>
-            <View style={{ flexGrow: 1, flexBasis: 145, padding: 12, borderRadius: 12, backgroundColor: cores.superficieElevada }}>
+            <View style={{ flexGrow: 1, flexBasis: 145, padding: 12, borderRadius: 12, backgroundColor: "#282727", borderWidth: 1, borderColor: cores.borda }}>
               <Text style={estilos.rotuloResumo}>Saldo disponível agora</Text>
               <Text style={{ color: Number(dados.saldoDisponivel) < 0 ? cores.perigo : cores.sucesso, fontSize: 16, fontWeight: '800', marginTop: 4 }}>
                 {formatarReais(dados.saldoDisponivel)}
@@ -204,7 +204,7 @@ export default function VisaoFinanceira({ dados, aoExportar, exportando = false,
               <Text style={estilos.pequeno}>Já considera o que ocorreu até hoje.</Text>
             </View>
 
-            <View style={{ flexGrow: 1, flexBasis: 145, padding: 12, borderRadius: 12, backgroundColor: cores.superficieElevada }}>
+            <View style={{flexGrow: 1, flexBasis: 145, padding: 12, borderRadius: 12, backgroundColor: "#282727", borderWidth: 1, borderColor: cores.borda }}>
               <Text style={estilos.rotuloResumo}>Saldo no fim do mês</Text>
               <Text style={{ color: Number(dados.saldoPrevisto) < 0 ? cores.perigo : cores.textoLink, fontSize: 16, fontWeight: '800', marginTop: 4 }}>
                 {formatarReais(dados.saldoPrevisto)}
@@ -227,7 +227,7 @@ export default function VisaoFinanceira({ dados, aoExportar, exportando = false,
       >
         {/* Cabeçalho do limite: valor único, botão de edição e estado geral. */}
         {limiteDefinido ? (
-          <View style={{ borderRadius: 16, borderWidth: 1, borderColor: cores.borda, backgroundColor: cores.superficieElevada, padding: 14, marginBottom: 16 }}>
+          <View style={{ borderRadius: 16, borderWidth: 1, borderColor: cores.borda, backgroundColor: "#282727", padding: 14, marginBottom: 16 }}>
             <View style={{ flexDirection: 'row', alignItems: 'flex-start', justifyContent: 'space-between', gap: 12 }}>
               <View style={{ flex: 1, minWidth: 0 }}>
                 <Text style={estilos.rotuloResumo}>Limite mensal único</Text>
