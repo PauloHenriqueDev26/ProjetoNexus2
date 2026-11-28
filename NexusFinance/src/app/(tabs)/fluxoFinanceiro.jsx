@@ -9,6 +9,7 @@ import BarraNavegacao from "../../componentes/BarraNavegacao";
 import { CartaoAnimado, TelaAnimada } from "../../componentes/TelaAnimada";
 import { useEstilosApp } from "../../style/style";
 import { apiAutenticada, formatarReais, formatarData } from "../../servicos/financeiro";
+import { CampoFormulario } from '../../componentes/LayoutFormulario';
 
 const LIMITE = 10;
 const ABAS = ['Geral', 'Receitas', 'Despesas'];
@@ -77,7 +78,6 @@ export default function FluxoFinanceiro() {
   const [contaFiltro, setContaFiltro] = useState('Todos');
   const [contaRascunho, setContaRascunho] = useState('Todos');
   const [periodo, setPeriodo] = useState(SEM_PERIODO);
-  const [periodoRascunho, setPeriodoRascunho] = useState(SEM_PERIODO);
   const [erroPeriodo, setErroPeriodo] = useState('');
   const [pagina, setPagina] = useState(1);
   const rolagem = useRef(null);
@@ -93,6 +93,13 @@ export default function FluxoFinanceiro() {
   const [revisao, setRevisao] = useState(0);
   const travaConfirmacao = useRef(false);
   const recarregar = useCallback(() => setRevisao(valor => valor + 1), []);
+  const [detalhe, setDetalhe] = useState(null);
+  const [editando, setEditando] = useState(false);
+  const [salvandoEdicao, setSalvandoEdicao] = useState(false);
+  const [erroEdicao, setErroEdicao] = useState('');
+  const [opcoesEdicao, setOpcoesEdicao] = useState({ categorias: [], tiposConta: [] });
+  const [edicao, setEdicao] = useState(null);
+  const [periodoRascunho, setPeriodoRascunho] = useState(SEM_PERIODO);
   useEffect(() => {
     if (ABAS.includes(aba)) {
       setAbaSelecionada(aba);
@@ -133,6 +140,25 @@ export default function FluxoFinanceiro() {
       travaConfirmacao.current = false;
       setConfirmando(null);
     }
+  }
+  async function abrirDetalhes(item) {
+    setDetalhe(item); setEditando(false); setErroEdicao('');
+    setEdicao({ descricao: item.descricao, valor: Number(item.valor).toFixed(2).replace('.', ','), data: formatarEntradaData(item.data), status: item.status, observacao: item.observacao || '', categoriaId: item.categoriaId, tipoContaId: item.tipoContaId });
+    try { const tipoApi = item.tipo === 'Receitas' ? 'Receita' : 'Despesa'; const resposta = await apiAutenticada(`/financeiro/opcoes?tipo=${encodeURIComponent(tipoApi)}`); setOpcoesEdicao(resposta); } catch (falha) { setErroEdicao(falha.message || 'Não foi possível carregar opções de edição.'); }
+  }
+  function fecharDetalhes() { if (salvandoEdicao) return; setDetalhe(null); setEditando(false); setErroEdicao(''); }
+  async function salvarEdicao() {
+    if (!detalhe || !edicao || salvandoEdicao) return;
+    const dataIso = dataParaIso(edicao.data); const valor = moedaParaNumero(edicao.valor);
+    if (!edicao.descricao.trim()) return setErroEdicao('Informe uma descrição.');
+    if (!Number.isFinite(valor) || valor <= 0) return setErroEdicao('Informe um valor válido.');
+    if (!dataIso) return setErroEdicao('Informe uma data válida no formato DD/MM/AAAA.');
+    setSalvandoEdicao(true); setErroEdicao('');
+    try {
+      await apiAutenticada(`/financeiro/transacoes/${detalhe.id}`, { method: 'PUT', body: JSON.stringify({ ...edicao, valor, data: dataIso }) });
+      setTransacoes(itens => itens.map(item => item.id === detalhe.id ? { ...item, descricao: edicao.descricao.trim(), valor, data: dataIso, status: edicao.status, observacao: edicao.observacao.trim(), categoria: opcoesEdicao.categorias.find(opcao => String(opcao.id) === String(edicao.categoriaId))?.nome || item.categoria, tipoConta: opcoesEdicao.tiposConta.find(opcao => String(opcao.id) === String(edicao.tipoContaId))?.nome || item.tipoConta, podeConfirmar: edicao.status === 'Pendente' && dataIso <= new Date().toISOString().slice(0, 10) } : item));
+      setDetalhe(null); setEditando(false);
+    } catch (falha) { setErroEdicao(falha.message || 'Não foi possível atualizar o lançamento.'); } finally { setSalvandoEdicao(false); }
   }
   const categoriasPorTipo = useMemo(() => {
     const tipos = ['Receitas', 'Despesas'];
@@ -302,6 +328,13 @@ export default function FluxoFinanceiro() {
         {gruposMes.map(([mes, itens]) => <View key={mes}>
           <Text accessibilityRole="header" style={{ color: cores.textoPrincipal, fontSize: 15, fontWeight: '700', textTransform: 'capitalize', marginTop: 10, marginBottom: 4, backgroundColor: "#251eae", paddingHorizontal: 10, paddingVertical: 5, borderRadius: 10, }}> {nomeMes(mes)}</Text>
           {itens.map((item, index) => <CartaoAnimado key={item.id} style={estilos.transacaoItem} atraso={260 + index * 30}>
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel={`Abrir detalhes de ${item.descricao}`}
+              onPress={() => abrirDetalhes(item)}
+              activeOpacity={0.8}
+              style={{ flex: 1, flexDirection: 'row', alignItems: 'center' }}
+            >
             <View style={[estilosCompartilhados.flexivel, { flex: 1, flexShrink: 1, maxWidth: '60%', marginRight: 8 }]}>
               <Text style={[estilos.transacaoDescricao, { flexShrink: 1 }]}>
                 {item.descricao}
@@ -327,6 +360,9 @@ export default function FluxoFinanceiro() {
                 {item.status}
                 {item.futura && item.status !== 'Cancelada' ? ' · agendada' : ''}
               </Text>
+              <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Ver detalhes de ${item.descricao}`} onPress={() => abrirDetalhes(item)} style={{ minHeight: 44, justifyContent: 'center' }}>
+                <Text style={{ color: cores.textoLink, fontSize: 13, fontWeight: '700' }}>Ver detalhes</Text>
+              </TouchableOpacity>
               {item.podeConfirmar ? <TouchableOpacity accessibilityRole="button" accessibilityLabel={'Confirmar ' + item.descricao} disabled={!!confirmando} onPress={() => confirmar(item)} style={{
                 minHeight: 44,
                 justifyContent: 'center'
@@ -339,6 +375,7 @@ export default function FluxoFinanceiro() {
                 </Text>
               </TouchableOpacity> : null}
             </View>
+            </TouchableOpacity>
           </CartaoAnimado>)}
         </View>)}
         <Paginacao pagina={paginaAtual} total={totalPaginas} aoMudar={mudarPagina} />
@@ -484,7 +521,7 @@ export default function FluxoFinanceiro() {
                     </Text>
                   </TouchableOpacity>
                   {estaAberto ? (
-                    <View style={{ marginTop: 100, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: cores.borda, backgroundColor: cores.superficieSecundaria }}>
+                    <View style={{ marginTop: 10, padding: 12, borderRadius: 12, borderWidth: 1, borderColor: cores.borda, backgroundColor: cores.superficieSecundaria }}>
                       {carregandoCategorias ? <ActivityIndicator accessibilityLabel="Carregando categorias" color={cores.primaria} style={{ marginVertical: 12 }} /> : null}
                       {erroCategorias ? <Text accessibilityRole="alert" style={{ color: cores.perigo, fontSize: 13, marginTop: 8 }}>{erroCategorias}</Text> : null}
                       {categoriasPorTipo[tipo].length ? (
@@ -520,6 +557,71 @@ export default function FluxoFinanceiro() {
         </View>
       </View>
     </Modal>
+    <Modal
+      visible={Boolean(detalhe)}
+      transparent
+      animationType="fade"
+      onRequestClose={fecharDetalhes}
+    >
+      <View style={{ flex: 1, justifyContent: 'center', padding: 20, backgroundColor: 'rgba(0,0,0,0.45)' }}>
+        <View style={{ width: '100%', maxWidth: 600, maxHeight: '90%', alignSelf: 'center', borderRadius: 16, backgroundColor: cores.fundo, padding: 20 }}>
+          <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', gap: 12 }}>
+            <Text accessibilityRole="header" style={estilos.dadosTitulo}>Detalhes do lançamento</Text>
+            <TouchableOpacity accessibilityRole="button" onPress={() => setEditando(valor => !valor)} disabled={salvandoEdicao} style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 8 }}>
+              <Text style={{ color: cores.primaria, fontWeight: '700' }}>{editando ? 'Cancelar edição' : 'Editar'}</Text>
+            </TouchableOpacity>
+          </View>
+
+          {detalhe && edicao ? <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false} style={{ maxHeight: '82%' }} contentContainerStyle={{ paddingBottom: 12 }}>
+            {editando ? <>
+              <Text style={{ color: cores.textoPrincipal, fontSize: 11, fontWeight: '600', letterSpacing: 0.2, textTransform: 'uppercase', marginBottom: 4 }}>Descrição</Text>
+              <CampoFormulario accessibilityLabel="Descrição do lançamento" value={edicao.descricao} onChangeText={descricao => setEdicao(atual => ({ ...atual, descricao }))} maxLength={255} style={{ marginTop: 6, borderRadius: 10, padding: 12, backgroundColor: cores.campo, color: cores.textoPrincipal, minHeight: 46 }} />
+
+              <Text style={{ color: cores.textoPrincipal, fontSize: 11, fontWeight: '600', letterSpacing: 0.2, textTransform: 'uppercase', marginTop: 14, marginBottom: 4 }}>Valor</Text>
+              <CampoFormulario accessibilityLabel="Valor do lançamento" value={edicao.valor} onChangeText={valor => setEdicao(atual => ({ ...atual, valor }))} mask="currency" keyboardType="decimal-pad" style={{ marginTop: 6, borderRadius: 10, padding: 12, backgroundColor: cores.campo, color: cores.textoPrincipal, minHeight: 46 }} />
+
+              <Text style={{ color: cores.textoPrincipal, fontSize: 11, fontWeight: '600', letterSpacing: 0.2, textTransform: 'uppercase', marginTop: 14, marginBottom: 4 }}>Data</Text>
+              <View style={{ marginTop: 6, borderRadius: 10, paddingHorizontal: 12, backgroundColor: cores.campo, minHeight: 46, justifyContent: 'center' }}>
+                <CampoData value={edicao.data} onChangeText={data => setEdicao(atual => ({ ...atual, data }))} placeholder="DD/MM/AAAA" />
+              </View>
+
+              <Text style={{ color: cores.textoPrincipal, fontSize: 11, fontWeight: '600', letterSpacing: 0.2, textTransform: 'uppercase', marginTop: 14, marginBottom: 4 }}>Situação</Text>
+              <OpcoesFiltro opcoes={[{ valor: 'Confirmada', rotulo: detalhe.tipo === 'Receitas' ? 'Recebida' : 'Paga' }, { valor: 'Pendente', rotulo: 'Pendente' }, { valor: 'Cancelada', rotulo: 'Cancelada' }]} selecionado={edicao.status} aoSelecionar={status => setEdicao(atual => ({ ...atual, status }))} cores={cores} />
+
+              <Text style={{ color: cores.textoPrincipal, fontSize: 11, fontWeight: '600', letterSpacing: 0.2, textTransform: 'uppercase', marginTop: 14, marginBottom: 4 }}>Categoria</Text>
+              <OpcoesFiltro opcoes={opcoesEdicao.categorias.map(itemOpcao => ({ valor: String(itemOpcao.id), rotulo: itemOpcao.nome }))} selecionado={String(edicao.categoriaId)} aoSelecionar={categoriaId => setEdicao(atual => ({ ...atual, categoriaId }))} cores={cores} />
+
+              <Text style={{ color: cores.textoPrincipal, fontSize: 11, fontWeight: '600', letterSpacing: 0.2, textTransform: 'uppercase', marginTop: 14, marginBottom: 4 }}>Conta</Text>
+              <OpcoesFiltro opcoes={opcoesEdicao.tiposConta.map(itemOpcao => ({ valor: String(itemOpcao.id), rotulo: itemOpcao.nome }))} selecionado={String(edicao.tipoContaId)} aoSelecionar={tipoContaId => setEdicao(atual => ({ ...atual, tipoContaId }))} cores={cores} />
+
+              <Text style={{ color: cores.textoPrincipal, fontSize: 11, fontWeight: '600', letterSpacing: 0.2, textTransform: 'uppercase', marginTop: 14, marginBottom: 4 }}>Observação</Text>
+              <CampoFormulario accessibilityLabel="Observação do lançamento" value={edicao.observacao} onChangeText={observacao => setEdicao(atual => ({ ...atual, observacao }))} multiline maxLength={5000} style={{ minHeight: 76, textAlignVertical: 'top', marginTop: 6, borderRadius: 10, padding: 12, backgroundColor: cores.campo, color: cores.textoPrincipal, minHeight: 46 }} />
+            </> : <>
+              <View style={{ marginTop: 14, gap: 8 }}>
+                <Text style={{ color: cores.textoPrincipal, fontSize: 22, fontWeight: '800' }}>{detalhe.descricao}</Text>
+                <Text style={{ color: detalhe.tipo === 'Receitas' ? cores.sucesso : cores.perigo, fontSize: 24, fontWeight: '800' }}>{detalhe.tipo === 'Receitas' ? '+' : '-'} {formatarReais(detalhe.valor)}</Text>
+                <Text style={{ color: cores.textoSecundario }}>Data: {formatarData(detalhe.data)}</Text>
+                <Text style={{ color: cores.textoSecundario }}>Situação: {detalhe.status}{detalhe.futura ? ' · agendada' : ''}</Text>
+                <Text style={{ color: cores.textoSecundario }}>Categoria: {detalhe.categoria}</Text>
+                <Text style={{ color: cores.textoSecundario }}>Conta: {detalhe.conta || detalhe.tipoConta}</Text>
+                {!!detalhe.observacao && <Text style={{ color: cores.textoSecundario, marginTop: 4 }}>Observação: {detalhe.observacao}</Text>}
+                {!!detalhe.anexos?.length && <Text style={{ color: cores.textoSecundario, marginTop: 4 }}>Anexos: {detalhe.anexos.map(anexo => anexo.nome).join(', ')}</Text>}
+              </View>
+            </>}
+            {erroEdicao ? <Text accessibilityRole="alert" style={estilosCompartilhados.erroTexto}>{erroEdicao}</Text> : null}
+          </ScrollView> : null}
+
+          <View style={{ flexDirection: 'row', justifyContent: 'flex-end', gap: 8, paddingTop: 12, borderTopWidth: 1, borderTopColor: cores.borda }}>
+            <TouchableOpacity accessibilityRole="button" onPress={fecharDetalhes} disabled={salvandoEdicao} style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 14, borderRadius: 12, borderWidth: 1, borderColor: cores.borda }}>
+              <Text style={{ color: cores.textoPrincipal, fontWeight: '700' }}>Fechar</Text>
+            </TouchableOpacity>
+            {editando ? <TouchableOpacity accessibilityRole="button" onPress={salvarEdicao} disabled={salvandoEdicao} style={{ minHeight: 44, justifyContent: 'center', paddingHorizontal: 18, borderRadius: 12, backgroundColor: cores.primaria }}>
+              <Text style={{ color: cores.sobrePrimaria, fontWeight: '700' }}>{salvandoEdicao ? 'Salvando...' : 'Salvar alterações'}</Text>
+            </TouchableOpacity> : null}
+          </View>
+        </View>
+      </View>
+    </Modal>
     <BarraNavegacao />
   </TelaAnimada>;
 
@@ -528,3 +630,12 @@ export default function FluxoFinanceiro() {
   // estaEmFoco impede carregamento da lista quando a tela não está visível.
   // travaConfirmacao impede confirmar duas vezes enquanto a primeira chamada ainda aguarda.
 }
+
+function moedaParaNumero(valor) {
+  const texto = String(valor ?? '').trim().replace(/\s/g, '').replace(/^R\$/i, '');
+  if (!texto) return Number.NaN;
+  if (texto.includes(',')) return Number(texto.replace(/\./g, '').replace(',', '.'));
+  if (/^\d{1,3}(?:\.\d{3})+$/.test(texto)) return Number(texto.replace(/\./g, ''));
+  return Number(texto);
+}
+

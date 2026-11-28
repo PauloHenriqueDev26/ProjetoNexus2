@@ -1,6 +1,6 @@
 import { resumoFinanceiro } from "../servicos/financeiro";
 import { gerarRecorrencias } from "../servicos/recorrencias";
-import { confirmarTransacao, criarTransacao, converterValorMonetario, identificadorPositivo } from "../servicos/transacoes";
+import { confirmarTransacao, criarTransacao, converterValorMonetario, dataTransacaoValida, identificadorPositivo } from "../servicos/transacoes";
 import { upload } from "../servicos/anexos";
 import { rotasOpcoesFinanceiras } from "./opcoesFinanceiras.rotas";
 import { Router } from 'express';
@@ -93,8 +93,8 @@ rotasDados.get('/financeiro/transacoes', async (requisicao: RequisicaoAutenticad
     await gerarRecorrencias(requisicao.userId!);
     const [linhas] = await bancoDados.query<DataRow[]>(`SELECT t.id_transacao AS id, t.descricao, t.valor,
         DATE_FORMAT(t.data_transacao, '%Y-%m-%d') AS data,
-        c.nome AS categoria, tt.nome AS tipo, st.nome AS status, t.observacao,
-        co.nome AS conta, tc.nome AS tipoConta, t.parcela_atual AS parcelaAtual, t.total_parcelas AS totalParcelas,
+        c.nome AS categoria, c.id_categoria AS categoriaId, tt.nome AS tipo, st.nome AS status, t.observacao,
+        co.nome AS conta, co.id_conta AS contaId, tc.id_tipo_conta AS tipoContaId, tc.nome AS tipoConta, t.parcela_atual AS parcelaAtual, t.total_parcelas AS totalParcelas,
         t.data_transacao > CURDATE() AS futura
        FROM transacoes t
        INNER JOIN categorias c ON c.id_categoria = t.id_categoria
@@ -111,6 +111,7 @@ rotasDados.get('/financeiro/transacoes', async (requisicao: RequisicaoAutenticad
         id: String(linha.id),
         descricao: String(linha.descricao),
         categoria: String(linha.categoria),
+        categoriaId: String(linha.categoriaId),
         tipo: linha.tipo === 'Receita' ? 'Receitas' : 'Despesas',
         valor: Number(linha.valor),
         data: String(linha.data),
@@ -119,6 +120,8 @@ rotasDados.get('/financeiro/transacoes', async (requisicao: RequisicaoAutenticad
         podeConfirmar: linha.status === 'Pendente' && !linha.futura,
         observacao: linha.observacao ? String(linha.observacao) : '',
         conta: String(linha.conta),
+        tipoContaId: String(linha.tipoContaId),
+        contaId: String(linha.contaId),
         tipoConta: String(linha.tipoConta),
         parcelaAtual: linha.parcelaAtual === null ? null : Number(linha.parcelaAtual),
         totalParcelas: linha.totalParcelas === null ? null : Number(linha.totalParcelas),

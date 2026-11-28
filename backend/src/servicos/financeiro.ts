@@ -45,16 +45,8 @@ async function lerResumo(conexao: PoolConnection, idUsuario: number) {
     JOIN status_transacao st USING (id_status_transacao)
     WHERE t.id_usuario = ? AND st.nome <> 'Cancelada'`, [idUsuario, idUsuario]);
   const hoje = String(linha.hoje);
-  const [[linhaMetas]] = await conexao.query<RowDataPacket[]>(`SELECT
-      COALESCE(SUM(GREATEST(COALESCE(movimentado.atual, 0), 0)), 0) AS reservado
-    FROM metas m
-    LEFT JOIN (
-      SELECT id_meta,
-        SUM(CASE WHEN tipo = 'deposito' THEN valor ELSE -valor END) AS atual
-      FROM movimentacoes_metas
-      GROUP BY id_meta
-    ) movimentado ON movimentado.id_meta = m.id_meta
-    WHERE m.id_usuario = ? AND m.status <> 'cancelada'`, [idUsuario]);
+  // Metas são objetivos internos de planejamento e seus depósitos não são
+  // despesas nem retiram dinheiro da conta. Por isso não entram no cálculo do saldo.
   const [[linhaDespesasPeriodoAnterior]] = await conexao.query<RowDataPacket[]>(`SELECT
       COALESCE(SUM(t.valor), 0) AS total
     FROM transacoes t
@@ -161,11 +153,11 @@ async function lerResumo(conexao: PoolConnection, idUsuario: number) {
   const diferenca = diferencaMonetaria(atual.saldo, anterior.saldo);
   const despesasPeriodoAnterior = centavos(linhaDespesasPeriodoAnterior.total) / 100;
   const diferencaDespesas = diferencaMonetaria(atual.totalDespesas, despesasPeriodoAnterior);
-  // O disponível desconta valores protegidos em metas; a previsão adiciona apenas
-  // o efeito líquido dos lançamentos pendentes/futuros do mês calculado na consulta.
+  // O disponível representa o saldo real das contas. Contribuições às metas
+  // continuam sendo recursos já existentes e não são despesas nem reservas que reduzem esse saldo.
   const saldoTotal = (centavos(linha.inicial) + centavos(linha.realizado)) / 100;
-  const saldoReservadoMetas = centavos(linhaMetas.reservado) / 100;
-  const saldoDisponivel = diferencaMonetaria(saldoTotal, saldoReservadoMetas);
+  const saldoReservadoMetas = 0;
+  const saldoDisponivel = saldoTotal;
   return {
     dataReferencia: hoje,
     saldoTotal: saldoTotal,
